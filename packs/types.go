@@ -66,29 +66,59 @@ func ReadPacksList(listName string) *PacksList {
 
 
 //
-//  Struct that defines vidx XML file
+//  Define common xml fields shared between vidx and pidx
 //
-type Vidx struct {
+type CommonIdx struct {
     XMLName xml.Name `xml:"index"`
     Vendor string `xml:"vendor"`
     URL string `xml:"url"`
     Timestamp string `xml:"timestamp"`
-    Vindex Vindex `xml:"vindex"`
 }
 
-type Vindex struct {
-    XMLName xml.Name `xml:"vindex"`
-    Pidxs []Pidx `xml:"pidx"`
+
+//
+//  Struct that defines vidx XML file
+//
+type Vidx struct {
+    CommonIdx
+
+    Vindex struct {
+        XMLName xml.Name `xml:"vindex"`
+        Pidxs []struct {
+            XMLName xml.Name `xml:"pidx"`
+            Vendor string `xml:"vendor,attr"`
+            URL string `xml:"url,attr"`
+        } `xml:"pidx"`
+    } `xml:"vindex"`
 }
 
+
+//
+//  Struct that defines pidx XML file
+//
 type Pidx struct {
-    XMLName xml.Name `xml:"pidx"`
-    Vendor string `xml:"vendor,attr"`
-    URL string `xml:"url,attr"`
+    CommonIdx
+
+    Pindex struct {
+        XMLName xml.Name `xml:"pindex"`
+        Pdscs []struct {
+            XMLName xml.Name `xml:"pdsc"`
+            Vendor string `xml:"vendor,attr"`
+            URL string `xml:"url,attr"`
+            Name string `xml:"name,attr"`
+            Version string `xml:"version,attr"`
+        } `xml:"pdsc"`
+    } `xml:"pindex"`
 }
 
 
 func ReadVidx(path string) (*Vidx, error) {
     vidx := new(Vidx)
     return vidx, utils.ReadXML(path, vidx)
+}
+
+
+func ReadPidx(path string) (*Pidx, error) {
+    pidx := new(Pidx)
+    return pidx, utils.ReadXML(path, pidx)
 }

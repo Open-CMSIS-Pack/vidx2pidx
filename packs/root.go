@@ -43,7 +43,15 @@ func updateVidxList(vidx config.Vidx) error {
 
     fmt.Printf("I: Reading package indexes from %s (%s)\n", vidxXML.Vendor, vidxXML.URL)
     for _, pidx := range vidxXML.Vindex.Pidxs {
-        fmt.Println(pidx.URL)
+        url := fmt.Sprintf("%s/%s.pidx", pidx.URL, pidx.Vendor)
+        pidxXML, err := ReadPidx(url)
+        if err != nil {
+           return err
+        }
+
+        for _, pdsc := range pidxXML.Pindex.Pdscs {
+            fmt.Println(pdsc.URL)
+        }
     }
     return nil
 }
