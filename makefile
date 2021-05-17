@@ -18,7 +18,10 @@ ifneq (,$(findstring windows,$(OS)))
 endif
 
 
-SOURCES := main.go $(wildcard commands/*.go) $(wildcard config/*.go) $(wildcard packs/*.go) $(wildcard *.go)
+SOURCES := $(wildcard commands/*.go) \
+           $(wildcard config/*.go) \
+           $(wildcard packs/*.go) \
+           $(wildcard *.go)
 
 
 all:
