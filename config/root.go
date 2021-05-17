@@ -1,4 +1,4 @@
-package main
+package config
 
 /**
  *  Handle all needed configuration for CMPack tool
@@ -27,6 +27,7 @@ package main
 
 
 import (
+    "errors"
     "encoding/json"
     "io/ioutil"
     "fmt"
@@ -68,7 +69,7 @@ func (c *config) write() {
 /**
  *  Read config file into memory
  */
-func InitConfig() {
+func Init() {
 
     jsonFile, err := os.Open(configFilename)
     if err != nil {
@@ -81,4 +82,24 @@ func InitConfig() {
     byteValue, _ := ioutil.ReadAll(jsonFile)
 
     json.Unmarshal(byteValue, &Config)
+}
+
+
+func AddVidx(name, path string) error {
+    for i := 0; i < len(Config.VidxSources); i++ {
+        if name == Config.VidxSources[i].Name {
+            message := fmt.Sprintf("There is already a vidx for name '%s': %s", name, Config.VidxSources[i].Path)
+            return errors.New(message)
+        }
+    }
+
+    vidx := Vidx{
+        Name: name,
+        Path: path,
+    }
+
+    Config.VidxSources = append(Config.VidxSources, vidx)
+    Config.write()
+
+    return nil
 }
