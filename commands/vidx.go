@@ -61,7 +61,24 @@ var vidxListCmd = &cobra.Command{
 }
 
 
+//
+//  Command: vidx rm
+//
+//  Remove a vidx source
+//
+var vidxRmCmd = &cobra.Command{
+    Use: "rm",
+    Args: cobra.ExactArgs(1),
+    Run: func(cmd *cobra.Command, args []string) {
+        if err := config.RemoveVidx(args[0]); err != nil {
+            fmt.Fprintf(os.Stderr, "E: vidx '%s' does not seem to exist.", args[0])
+        }
+    },
+}
+
+
 func init() {
     VidxCmd.AddCommand(vidxAddCmd)
     VidxCmd.AddCommand(vidxListCmd)
+    VidxCmd.AddCommand(vidxRmCmd)
 }

@@ -66,14 +66,21 @@ func (c *config) write() {
 }
 
 
-func AddVidx(name, path string) error {
-    for i := 0; i < len(Config.VidxSources); i++ {
-        if name == Config.VidxSources[i].Name {
-            message := fmt.Sprintf("There is already a vidx for name '%s': %s", name, Config.VidxSources[i].Path)
-            return errors.New(message)
+func (c *config) vidxExist(name string) int {
+    for i := 0; i < len(c.VidxSources); i++ {
+        if name == c.VidxSources[i].Name {
+            return i
         }
     }
+    return -1
+}
 
+
+func AddVidx(name, path string) error {
+    if exist := Config.vidxExist(name); exist != -1 {
+        message := fmt.Sprintf("There is already a vidx for name '%s'", name)
+        return errors.New(message)
+    }
     vidx := Vidx{
         Name: name,
         Path: path,
@@ -88,6 +95,19 @@ func AddVidx(name, path string) error {
 
 func ListVidxs() []Vidx {
     return Config.VidxSources
+}
+
+
+func RemoveVidx(name string) error {
+    exist := Config.vidxExist(name)
+    if exist == -1 {
+        message := fmt.Sprintf("Vidx '%s' does not seem to exist", name)
+        return errors.New(message)
+    }
+
+    Config.VidxSources = append(Config.VidxSources[:exist], Config.VidxSources[exist + 1:]...)
+    Config.write()
+    return nil
 }
 
 
