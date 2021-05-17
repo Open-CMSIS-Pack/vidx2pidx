@@ -24,21 +24,28 @@ package packs
 
 import (
     "fmt"
-    "github.com/chaws/cmpack/config"
     "os"
+    "github.com/chaws/cmpack/config"
 )
 
 
 var listsDir = "cmpack-lists"
 
 
-func updateVidxList(vidx config.Vidx) {
+func updateVidxList(vidx config.Vidx) error {
     fmt.Printf("I: Updating packs list for '%s' (reading from %s)\n", vidx.Name, vidx.Path)
-    packsList := ReadPacksList(vidx.Name)
-    fmt.Printf("Pack %s", packsList.Name)
-    // Read vidx.Name list file into memory
-    // Read pidx-es from vidx.Path (either local file or url)
-    // If there's any new package or package removal, update local list
+    //packsList := ReadPacksList(vidx.Name)
+
+    vidxXML, err := ReadVidx(vidx.Path)
+    if err != nil {
+       return err
+    }
+
+    fmt.Printf("I: Reading package indexes from %s (%s)\n", vidxXML.Vendor, vidxXML.URL)
+    for _, pidx := range vidxXML.Vindex.Pidxs {
+        fmt.Println(pidx.URL)
+    }
+    return nil
 }
 
 
