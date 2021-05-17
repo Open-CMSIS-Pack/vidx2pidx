@@ -78,7 +78,9 @@ var vidxRmCmd = &cobra.Command{
 
 
 func init() {
-    VidxCmd.AddCommand(vidxAddCmd)
-    VidxCmd.AddCommand(vidxListCmd)
-    VidxCmd.AddCommand(vidxRmCmd)
+    VidxCmd.AddCommand(
+        vidxAddCmd,
+        vidxListCmd,
+        vidxRmCmd,
+    )
 }

@@ -36,7 +36,12 @@ Complete documentation is available at https://cmpack.com`,
 
 
 func Run() {
-    rootCmd.AddCommand(VidxCmd)
+
+    rootCmd.AddCommand(
+        VidxCmd,
+        UpdateCmd,
+    )
+
     if err := rootCmd.Execute(); err != nil {
         fmt.Fprintln(os.Stderr, err)
         os.Exit(1)
