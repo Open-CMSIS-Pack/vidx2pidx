@@ -1,29 +1,29 @@
 package config
 
-/**
- *  Handle all needed configuration for CMPack tool
- *
- *  Order of configurations to load:
- *  1. From cmdline argument
- *  2. From environment variable
- *  3. From configuration file
- *
- *  This means that cmpack will first try to load configs from a file,
- *  then overwrite it if there are any environment variables, and finally
- *  overwrite again if there's any cmdline given regarding config
- *
- *  The config file should be in JSON format, as it's supported by default by GO's stdlib
- *
- *  Example of a config file:
- *
- *  $ cat .cmpack_config.json
- *  {
- *      "vidx_sources": [
- *          {"name": "vidx-source-1", "path": "/path/to/vidx"},
- *          {"name": "vidx-source-2", "path": "http://example.com/other.vidx"}
- *      ]
- *  }
- */
+
+//
+//  Handle all needed configuration for CMPack tool
+//
+//  Order of configurations to load:
+//  1. From cmdline argument
+//  2. From environment variable
+//  3. From configuration file
+//
+//  This means that cmpack will first try to load configs from a file,
+//  then overwrite it if there are any environment variables, and finally
+//  overwrite again if there's any cmdline given regarding config
+//
+//  The config file should be in JSON format, as it's supported by default by GO's stdlib
+//
+//  Example of a config file:
+//
+//  $ cat .cmpack_config.json
+//  {
+//      "vidx_sources": [
+//          {"name": "vidx-source-1", "path": "/path/to/vidx"},
+//          {"name": "vidx-source-2", "path": "http://example.com/other.vidx"}
+//      ]
+//  }
 
 
 import (
@@ -38,19 +38,19 @@ import (
 var configFilename = ".cmpack.json"
 
 
-/**
- *  Defines config file structure
- */
+//
+//  Defines config file structure
+//
 type config struct {
     VidxSources []Vidx `json:"vidx_sources"`
 }
 
 
-/**
- *  Vidx stands for Vendor Index, it contains the sources
- *  provided by vendors. Each vidx file can be obtained from
- *  a local file or from a web URL.
- */
+//
+//  Vidx stands for Vendor Index, it contains the sources
+//  provided by vendors. Each vidx file can be obtained from
+//  a local file or from a web URL.
+//
 type Vidx struct {
     Name string `json:"name"`
     Path string `json:"path"`
@@ -66,9 +66,9 @@ func (c *config) write() {
 }
 
 
-/**
- *  Read config file into memory
- */
+//
+//  Read config file into memory
+//
 func Init() {
 
     jsonFile, err := os.Open(configFilename)

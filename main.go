@@ -1,5 +1,6 @@
 package main
 
+
 import (
     "github.com/chaws/cmpack/config"
     cli "github.com/chaws/cmpack/commands"

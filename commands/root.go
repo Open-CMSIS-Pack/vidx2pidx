@@ -1,11 +1,12 @@
-// This module will be responsible for handling cli commands
 package commands
+
 
 import (
     "fmt"
     "github.com/spf13/cobra"
     "os"
 )
+
 
 var rootCmd = &cobra.Command{
     Use:   "cmpack",
@@ -19,9 +20,7 @@ Complete documentation is available at https://cmpack.com`,
     },
 }
 
-/**
- *  Parse cmdline arguments and invoke user's commands
- */
+
 func Run() {
     rootCmd.AddCommand(VidxCmd)
     fmt.Println("Generating cmdline args")
