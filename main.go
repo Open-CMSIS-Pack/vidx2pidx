@@ -5,6 +5,12 @@ import (
 )
 
 
+func Init() {
+    InitConfig()
+}
+
+
 func main(){
+    Init()
     cli.Run()
 }
