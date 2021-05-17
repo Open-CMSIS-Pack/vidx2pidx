@@ -7,8 +7,6 @@ import (
     "fmt"
     "os"
     "path"
-    "errors"
-    "strings"
     "github.com/chaws/cmpack/utils"
 )
 
@@ -91,33 +89,6 @@ type Pidx struct {
 
 
 func ReadVidx(path string) (*Vidx, error) {
-    var contents []byte
-    var err error
-    var xmlFile *os.File
-
-    if strings.HasPrefix(path, "http") {
-        contents, err = utils.ReadURL(path)
-        if err != nil {
-            message := fmt.Sprintf("Could not retrieve packages index from '%s': %s", path, err)
-            return nil, errors.New(message)
-        }
-    } else {
-        xmlFile, err = os.Open(path)
-        if err != nil {
-            message := fmt.Sprintf("Could not open vidx file '%s': %s", path, err)
-            return nil, errors.New(message)
-        }
-
-        contents, err = ioutil.ReadAll(xmlFile)
-        if err != nil {
-            message := fmt.Sprintf("Could not read vidx file '%s': %s", path, err)
-            return nil, errors.New(message)
-        }
-    }
-
     vidx := new(Vidx)
-
-    xml.Unmarshal(contents, vidx)
-
-    return vidx, nil
+    return vidx, utils.ReadXML(path, vidx)
 }
