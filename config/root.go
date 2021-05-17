@@ -66,25 +66,6 @@ func (c *config) write() {
 }
 
 
-//
-//  Read config file into memory
-//
-func Init() {
-
-    jsonFile, err := os.Open(configFilename)
-    if err != nil {
-        fmt.Printf("W: Config file '%s' not found, creating one\n", configFilename)
-        Config.write()
-    }
-
-    defer jsonFile.Close()
-
-    byteValue, _ := ioutil.ReadAll(jsonFile)
-
-    json.Unmarshal(byteValue, &Config)
-}
-
-
 func AddVidx(name, path string) error {
     for i := 0; i < len(Config.VidxSources); i++ {
         if name == Config.VidxSources[i].Name {
@@ -102,4 +83,28 @@ func AddVidx(name, path string) error {
     Config.write()
 
     return nil
+}
+
+
+func ListVidxs() []Vidx {
+    return Config.VidxSources
+}
+
+
+//
+//  Read config file into memory
+//
+func Init() {
+
+    jsonFile, err := os.Open(configFilename)
+    if err != nil {
+        fmt.Printf("W: Config file '%s' not found, creating one\n", configFilename)
+        Config.write()
+    }
+
+    defer jsonFile.Close()
+
+    byteValue, _ := ioutil.ReadAll(jsonFile)
+
+    json.Unmarshal(byteValue, &Config)
 }

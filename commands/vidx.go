@@ -43,6 +43,25 @@ var vidxAddCmd = &cobra.Command{
 }
 
 
+//
+//  Command: vidx list
+//
+//  List available vidx sources
+//
+var vidxListCmd = &cobra.Command{
+    Use: "list",
+    Args: cobra.ExactArgs(0),
+    Run: func(cmd *cobra.Command, args []string) {
+        vidxSources := config.ListVidxs()
+        for i := 0; i < len(vidxSources); i++ {
+            vidx := vidxSources[i]
+            fmt.Printf("%s: %s\n", vidx.Name, vidx.Path)
+        }
+    },
+}
+
+
 func init() {
     VidxCmd.AddCommand(vidxAddCmd)
+    VidxCmd.AddCommand(vidxListCmd)
 }
