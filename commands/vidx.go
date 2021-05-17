@@ -19,7 +19,7 @@ var VidxCmd = &cobra.Command{
     Short: "Add, list or remove vendor index sources",
     Args: cobra.ExactArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
-        fmt.Fprintf(os.Stderr, "Uknown command '%s'.", args[0])
+        unknownCommand(args[0], "vidx")
     },
 }
 
