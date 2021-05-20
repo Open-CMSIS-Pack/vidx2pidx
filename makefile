@@ -12,9 +12,9 @@ ARCH := $(or ${ARCH},${ARCH},amd64)
 
 
 # Determine binary file name
-PROG := build/cmpack
+PROG := build/cmpack-idx-gen
 ifneq (,$(findstring windows,$(OS)))
-    PROG=build/cmpack.exe
+    PROG=build/cmpack-idx-gen.exe
 endif
 
 
@@ -31,8 +31,8 @@ all:
 	@echo $$ make clean
 	@echo
 	@echo Build for different OS's and ARCH's by defining these variables. Ex:
-	@echo $$ make OS=windows ARCH=amd64 build/cmpack.exe  \# build for windows 64bits
-	@echo $$ make OS=darwin  ARCH=amd64 build/cmpack       \# build for MacOS 64bits
+	@echo $$ make OS=windows ARCH=amd64 build/cmpack-idx-gen.exe  \# build for windows 64bits
+	@echo $$ make OS=darwin  ARCH=amd64 build/cmpack-idx-gen       \# build for MacOS 64bits
 	@echo
 	@echo Clean everything
 	@echo $$ make clean

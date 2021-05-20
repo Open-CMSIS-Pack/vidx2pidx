@@ -2,8 +2,8 @@ package main
 
 
 import (
-    "github.com/chaws/cmpack/config"
-    cli "github.com/chaws/cmpack/commands"
+    "github.com/chaws/cmpack-idx-gen/config"
+    cli "github.com/chaws/cmpack-idx-gen/commands"
 )
 
 

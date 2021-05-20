@@ -4,7 +4,7 @@ package commands
 import (
     "fmt"
     "github.com/spf13/cobra"
-    "github.com/chaws/cmpack/packs"
+    "github.com/chaws/cmpack-idx-gen/packs"
     "os"
 )
 

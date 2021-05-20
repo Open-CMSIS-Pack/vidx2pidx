@@ -3,13 +3,13 @@ package commands
 
 import (
     "fmt"
-    "github.com/spf13/cobra"
     "os"
     "strings"
+    "github.com/spf13/cobra"
 )
 
 
-var BinName = "cmpack"
+var BinName = "cmpack-idx-gen"
 
 
 func unknownCommand(args ...string) {
@@ -25,9 +25,7 @@ func unknownCommand(args ...string) {
 
 var rootCmd = &cobra.Command{
     Use:   BinName,
-    Short: "This a tool to manage local CMSIS-Pack packages",
-    Long: `A useful tool that helps downloading CMSIS-Pack packages from various vendors.
-Complete documentation is available at https://cmpack.com`,
+    Short: "Generates package index based on CMSIS-Pack vendors",
     Args: cobra.ExactArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
         unknownCommand(args[0])

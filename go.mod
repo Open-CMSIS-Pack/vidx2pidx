@@ -1,4 +1,4 @@
-module github.com/chaws/cmpack
+module github.com/chaws/cmpack-idx-gen
 
 go 1.16
 

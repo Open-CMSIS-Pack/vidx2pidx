@@ -6,20 +6,20 @@ CMSIS-Pack intro goes here
 
 1. Add a vendor index file (link-to-vdix-page)
 
-    $ cmpack add-vidx TheVendor https://the-vidx.com/TheVendor.vidx
+    $ cmpack-idx-gen add-vidx TheVendor https://the-vidx.com/TheVendor.vidx
 
 2. Update the list of packages
 
-    $ cmpack update
+    $ cmpack-idx-gen update
 
 3. Search for packages or components or devices
 
-    $ cmpack search pack-you-are-looking-for
+    $ cmpack-idx-gen search pack-you-are-looking-for
 
 4. Install a pack
 
-    $ cmpack install TheVendor.ThePack[:.0.0.1]
+    $ cmpack-idx-gen install TheVendor.ThePack[:.0.0.1]
 
 5. Remove a pack
 
-    $ cmpack remove TheVendor.ThePack[:.0.0.1]
+    $ cmpack-idx-gen remove TheVendor.ThePack[:.0.0.1]

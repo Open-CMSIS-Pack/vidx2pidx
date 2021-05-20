@@ -9,7 +9,7 @@ package config
 //  2. From environment variable
 //  3. From configuration file
 //
-//  This means that cmpack will first try to load configs from a file,
+//  This means that cmpack-idx-gen will first try to load configs from a file,
 //  then overwrite it if there are any environment variables, and finally
 //  overwrite again if there's any cmdline given regarding config
 //
@@ -17,7 +17,7 @@ package config
 //
 //  Example of a config file:
 //
-//  $ cat .cmpack_config.json
+//  $ cat .cmpack-idx-gen_config.json
 //  {
 //      "vidx_sources": [
 //          {"name": "vidx-source-1", "path": "/path/to/vidx"},
@@ -35,7 +35,7 @@ import (
 )
 
 
-var configFilename = ".cmpack.json"
+var configFilename = ".cmpack-idx-gen.json"
 
 
 //

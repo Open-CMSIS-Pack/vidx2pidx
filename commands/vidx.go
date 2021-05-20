@@ -4,7 +4,7 @@ package commands
 import (
     "fmt"
     "github.com/spf13/cobra"
-    "github.com/chaws/cmpack/config"
+    "github.com/chaws/cmpack-idx-gen/config"
     "os"
 )
 
@@ -27,7 +27,7 @@ var VidxCmd = &cobra.Command{
 //
 //  Command: vidx add <vidx-name> <vidx-path>
 //
-//  Adds a vidx source to cmpack config file
+//  Adds a vidx source to cmpack-idx-gen config file
 //
 var vidxAddCmd = &cobra.Command{
     Use: "add <name> <path>",
