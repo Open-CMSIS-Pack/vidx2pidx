@@ -31,7 +31,7 @@ var PidxCmd = &cobra.Command{
 //
 var PidxUpdateCmd = &cobra.Command{
     Use: "update",
-    Args: cobra.ExactArgs(2),
+    Args: cobra.ExactArgs(0),
     Run: func(cmd *cobra.Command, args []string) {
         if err := xml.Pidx.Update(); err != nil {
             fmt.Fprintf(os.Stderr, "E: %s\n", err)
