@@ -4,6 +4,7 @@ package xml
 import (
     "fmt"
     "os"
+    "errors"
     "encoding/xml"
     "github.com/chaws/cmpack-idx-gen/utils"
 )
@@ -34,7 +35,7 @@ type VendorPidx struct {
     XMLName xml.Name `xml:"pidx"`
     Vendor string `xml:"vendor,attr"`
     URL string `xml:"url,attr"`
-    // Timestamp?
+    Timestamp string `xml:"timestamp,attr"`
 }
 
 
@@ -51,9 +52,33 @@ func (v *VidxXML) save() error {
 }
 
 
+func (v *VidxXML) find(vendorName string) int {
+    for i, pidx := range v.Vindex.VendorPidxs {
+        if pidx.Vendor == vendorName {
+            return i
+        }
+    }
+
+    return -1
+}
+
+
 func (v *VidxXML) AddPidx(vendorName, pidxURL string) error {
     fmt.Printf("I: Adding '%s' (%s)\n", vendorName, pidxURL)
-    return nil
+
+    if v.find(vendorName) != -1 {
+        message := fmt.Sprintf("Vendor '%s' already exists.", vendorName)
+        return errors.New(message)
+    }
+
+    vendorPidx := VendorPidx {
+        Vendor: vendorName,
+        URL: pidxURL,
+        Timestamp: "",
+    }
+    v.Vindex.VendorPidxs = append(v.Vindex.VendorPidxs, vendorPidx)
+
+    return v.save()
 }
 
 
@@ -65,5 +90,14 @@ func (v *VidxXML) ListPidx() []VendorPidx {
 
 func (v *VidxXML) RemovePidx(vendorName string) error {
     fmt.Printf("I: Removing vendor '%s'\n", vendorName)
-    return nil
+
+    idx := v.find(vendorName)
+    if idx == -1 {
+        message := fmt.Sprintf("Vendor '%s' does not exist", vendorName)
+        return errors.New(message)
+    }
+
+    pidxs := v.Vindex.VendorPidxs
+    v.Vindex.VendorPidxs = append(pidxs[:idx], pidxs[idx+1:]...)
+    return v.save()
 }
