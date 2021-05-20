@@ -1,11 +1,3 @@
-# Hack to parse extra args from `make run $@` to `$(PROG) $@`
-# ref: https://stackoverflow.com/a/14061796/3908350
-ifeq (run,$(firstword $(MAKECMDGOALS)))
-  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-  $(eval $(RUN_ARGS):;@:)
-endif
-
-
 # Having these will allow CI scripts to build for many OS's and ARCH's
 OS   := $(or ${OS},${OS},linux)
 ARCH := $(or ${ARCH},${ARCH},amd64)
@@ -43,7 +35,7 @@ $(PROG): $(SOURCES)
 
 
 run: $(PROG)
-	@./$(PROG) $(RUN_ARGS) || true
+	@./$(PROG) $(ARGS) || true
 
 
 clean:
