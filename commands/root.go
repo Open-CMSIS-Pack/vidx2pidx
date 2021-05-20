@@ -37,7 +37,7 @@ func Run() {
 
     rootCmd.AddCommand(
         VidxCmd,
-        UpdateCmd,
+        PidxCmd,
     )
 
     if err := rootCmd.Execute(); err != nil {

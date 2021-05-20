@@ -29,7 +29,7 @@ var PidxCmd = &cobra.Command{
 //
 //  Updates the list of all packages (pdsc)
 //
-var AddCmd = &cobra.Command{
+var PidxUpdateCmd = &cobra.Command{
     Use: "update",
     Args: cobra.ExactArgs(2),
     Run: func(cmd *cobra.Command, args []string) {
@@ -46,7 +46,7 @@ var AddCmd = &cobra.Command{
 //
 //  List all available pdsc's
 //
-var ListCmd = &cobra.Command{
+var PidxListCmd = &cobra.Command{
     Use: "list",
     Args: cobra.ExactArgs(0),
     Run: func(cmd *cobra.Command, args []string) {
@@ -59,7 +59,7 @@ var ListCmd = &cobra.Command{
 
 func init() {
     PidxCmd.AddCommand(
-        UpdateCmd,
-        ListCmd
+        PidxUpdateCmd,
+        PidxListCmd,
     )
 }

@@ -29,7 +29,7 @@ var VidxCmd = &cobra.Command{
 //
 //  Adds a Vendor pidx file to cmpack-idx-gen vidx
 //
-var AddCmd = &cobra.Command{
+var VidxAddCmd = &cobra.Command{
     Use: "add <vendor-name> <vendor-pidx-url>",
     Args: cobra.ExactArgs(2),
     Run: func(cmd *cobra.Command, args []string) {
@@ -48,13 +48,12 @@ var AddCmd = &cobra.Command{
 //
 //  List all Vendor pidx
 //
-var ListCmd = &cobra.Command{
+var VidxListCmd = &cobra.Command{
     Use: "list",
     Args: cobra.ExactArgs(0),
     Run: func(cmd *cobra.Command, args []string) {
-        vidxSources := config.ListVidxs()
-        for i, vendor := range xml.Vidx.ListPidx {
-            fmt.Printf("I: [%d] %s %s\n", i, vendor.Name, vendor.PidxURL)
+        for i, pidx := range xml.Vidx.ListPidx() {
+            fmt.Printf("I: [%d] %s %s\n", i, pidx.Vendor, pidx.URL)
         }
     },
 }
@@ -65,7 +64,7 @@ var ListCmd = &cobra.Command{
 //
 //  Remove a vendor-pidx
 //
-var RmCmd = &cobra.Command{
+var VidxRmCmd = &cobra.Command{
     Use: "rm",
     Args: cobra.ExactArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
@@ -79,8 +78,8 @@ var RmCmd = &cobra.Command{
 
 func init() {
     VidxCmd.AddCommand(
-        AddCmd,
-        ListCmd,
-        RmCmd,
+        VidxAddCmd,
+        VidxListCmd,
+        VidxRmCmd,
     )
 }

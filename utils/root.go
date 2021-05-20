@@ -39,7 +39,6 @@ func ReadXML(path string,  targetStruct interface{}) error {
         if err != nil {
             return err
         }
-
     } else {
         xmlFile, err = os.Open(path)
         if err != nil {
@@ -53,6 +52,22 @@ func ReadXML(path string,  targetStruct interface{}) error {
     }
 
     xml.Unmarshal(contents, targetStruct)
+
+    return nil
+}
+
+
+func WriteXML(path string,  targetStruct interface{}) error {
+
+    file, err := xml.MarshalIndent(targetStruct, "", " ")
+    if err != nil {
+        return err
+    }
+
+	err = ioutil.WriteFile(path, file, 0666)
+    if err != nil {
+        return err
+    }
 
     return nil
 }

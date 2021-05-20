@@ -2,13 +2,13 @@ package main
 
 
 import (
-    "github.com/chaws/cmpack-idx-gen/config"
+    "github.com/chaws/cmpack-idx-gen/xml"
     cli "github.com/chaws/cmpack-idx-gen/commands"
 )
 
 
 func Init() {
-    config.Init()
+    xml.Init()
 }
 
 

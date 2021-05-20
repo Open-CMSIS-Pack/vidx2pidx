@@ -19,8 +19,7 @@ endif
 
 
 SOURCES := $(wildcard commands/*.go) \
-           $(wildcard config/*.go) \
-           $(wildcard packs/*.go) \
+           $(wildcard xml/*.go) \
            $(wildcard *.go)
 
 
