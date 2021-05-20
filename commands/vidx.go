@@ -4,7 +4,7 @@ package commands
 import (
     "fmt"
     "github.com/spf13/cobra"
-    "github.com/chaws/cmpack-idx-gen/config"
+    "github.com/chaws/cmpack-idx-gen/xml"
     "os"
 )
 
@@ -16,7 +16,7 @@ import (
 //
 var VidxCmd = &cobra.Command{
     Use:   "vidx",
-    Short: "Add, list or remove vendor index sources",
+    Short: "Add, list or remove Vendors",
     Args: cobra.ExactArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
         unknownCommand(args[0], "vidx")
@@ -27,15 +27,15 @@ var VidxCmd = &cobra.Command{
 //
 //  Command: vidx add <vidx-name> <vidx-path>
 //
-//  Adds a vidx source to cmpack-idx-gen config file
+//  Adds a Vendor pidx file to cmpack-idx-gen vidx
 //
-var vidxAddCmd = &cobra.Command{
-    Use: "add <name> <path>",
+var AddCmd = &cobra.Command{
+    Use: "add <vendor-name> <vendor-pidx-url>",
     Args: cobra.ExactArgs(2),
     Run: func(cmd *cobra.Command, args []string) {
-        var name = args[0]
-        var path = args[1]
-        if err := config.AddVidx(name, path); err != nil {
+        var vendorName = args[0]
+        var pidxURL = args[1]
+        if err := xml.Vidx.AddPidx(vendorName, pidxURL); err != nil {
             fmt.Fprintf(os.Stderr, "E: %s\n", err)
             os.Exit(-1)
         }
@@ -46,32 +46,32 @@ var vidxAddCmd = &cobra.Command{
 //
 //  Command: vidx list
 //
-//  List available vidx sources
+//  List all Vendor pidx
 //
-var vidxListCmd = &cobra.Command{
+var ListCmd = &cobra.Command{
     Use: "list",
     Args: cobra.ExactArgs(0),
     Run: func(cmd *cobra.Command, args []string) {
         vidxSources := config.ListVidxs()
-        for i := 0; i < len(vidxSources); i++ {
-            vidx := vidxSources[i]
-            fmt.Printf("%s: %s\n", vidx.Name, vidx.Path)
+        for i, vendor := range xml.Vidx.ListPidx {
+            fmt.Printf("I: [%d] %s %s\n", i, vendor.Name, vendor.PidxURL)
         }
     },
 }
 
 
 //
-//  Command: vidx rm
+//  Command: vidx rm <vendor-name>
 //
-//  Remove a vidx source
+//  Remove a vendor-pidx
 //
-var vidxRmCmd = &cobra.Command{
+var RmCmd = &cobra.Command{
     Use: "rm",
     Args: cobra.ExactArgs(1),
     Run: func(cmd *cobra.Command, args []string) {
-        if err := config.RemoveVidx(args[0]); err != nil {
-            fmt.Fprintf(os.Stderr, "E: vidx '%s' does not seem to exist.", args[0])
+        vendorName := args[0]
+        if err := xml.Vidx.RemovePidx(vendorName); err != nil {
+            fmt.Fprintf(os.Stderr, "E: vendor '%s' does not seem to exist.", vendorName)
         }
     },
 }
@@ -79,8 +79,8 @@ var vidxRmCmd = &cobra.Command{
 
 func init() {
     VidxCmd.AddCommand(
-        vidxAddCmd,
-        vidxListCmd,
-        vidxRmCmd,
+        AddCmd,
+        ListCmd,
+        RmCmd,
     )
 }
