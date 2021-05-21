@@ -5,6 +5,7 @@ import (
     "fmt"
     "os"
     "errors"
+    "sync"
     "encoding/xml"
     "github.com/chaws/cmpack-idx-gen/utils"
 )
@@ -84,29 +85,54 @@ func (p *PidxXML) ListPdsc() []Pdsc{
 }
 
 
-func (p *PidxXML) Update() error {
-    fmt.Println("I: Updating list of packages (pdsc)")
-    for i, pidx := range Vidx.ListPidx() {
-        url := fmt.Sprintf("%s%s.pidx", pidx.URL, pidx.Vendor)
-        fmt.Printf("I: [%d] Fetching packages list from %s\n", i, url)
+func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.WaitGroup, err *error) {
 
-        incomingPidx := new(PidxXML)
-        if err := utils.ReadXML(url, &incomingPidx); err != nil {
+    defer wg.Done()
+
+    url := fmt.Sprintf("%s%s.pidx", vendorPidx.URL, vendorPidx.Vendor)
+    fmt.Printf("I: [%d] Fetching packages list from %s\n", id, url)
+
+    incomingPidx := new(PidxXML)
+    if *err = utils.ReadXML(url, &incomingPidx); *err != nil {
+        return
+    }
+
+    if vendorPidx.Timestamp == incomingPidx.Timestamp {
+        // Nothing changed, avoid extra work
+        return
+    }
+
+    // Save this timestamp to avoid extra work next time
+    Vidx.setPidxTimestamp(id, incomingPidx.Timestamp)
+
+    for _, pdsc := range incomingPidx.ListPdsc() {
+        pidx.addPdsc(pdsc)
+    }
+}
+
+
+func (p *PidxXML) Update() error {
+
+    fmt.Println("I: Updating list of packages (pdsc)")
+
+    var wg sync.WaitGroup
+    errs := make([]error, Vidx.length())
+    for i, vendorPidx := range Vidx.ListPidx() {
+        wg.Add(1)
+        go updatePdscListTask(i, vendorPidx, p, &wg, &errs[i])
+    }
+
+    wg.Wait()
+
+    for _, err := range errs {
+        if err != nil {
             return err
         }
+    }
 
-        if pidx.Timestamp == incomingPidx.Timestamp {
-            // Nothing changed, avoid extra work
-            continue
-        }
-
-        // Save this timestamp to avoid extra work next time
-        Vidx.Vindex.VendorPidxs[i].Timestamp = incomingPidx.Timestamp
-        Vidx.save()
-
-        for _, pdsc := range incomingPidx.ListPdsc() {
-            p.addPdsc(pdsc)
-        }
+    err := Vidx.save()
+    if err != nil {
+        return err
     }
 
     return p.save()

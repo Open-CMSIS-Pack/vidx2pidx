@@ -101,3 +101,20 @@ func (v *VidxXML) RemovePidx(vendorName string) error {
     v.Vindex.VendorPidxs = append(pidxs[:idx], pidxs[idx+1:]...)
     return v.save()
 }
+
+
+func (v *VidxXML) setPidxTimestamp(idx int, timestamp string) error {
+    max_length := len(v.Vindex.VendorPidxs)
+    if idx + 1 > max_length {
+        message := fmt.Sprintf("Fail to set vendor pidx timestamp: %d is out of bounds %d", idx, max_length)
+        return errors.New(message)
+    }
+
+    v.Vindex.VendorPidxs[idx].Timestamp = timestamp
+    return nil
+}
+
+
+func (v *VidxXML) length() int {
+    return len(v.Vindex.VendorPidxs)
+}
