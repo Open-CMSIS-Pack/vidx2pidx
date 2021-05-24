@@ -36,6 +36,7 @@ type Pdsc struct {
     URL string `xml:"url,attr"`
     Name string `xml:"name,attr"`
     Version string `xml:"version,attr"`
+    Timestamp string `xml:"timestamp,attr"`
 }
 
 
@@ -57,7 +58,7 @@ func (p *PidxXML) findPdsc(targetPdsc Pdsc) int {
 
 
 func (p *PidxXML) ListPdsc() []Pdsc{
-    fmt.Println("D: Listing available packages (pdsc)")
+    fmt.Println("D: Listing available packages")
     return p.Pindex.Pdscs
 }
 
@@ -87,10 +88,14 @@ func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.W
 
 func (p *PidxXML) Update() error {
 
-    fmt.Println("I: Updating list of packages (pdsc)")
+    fmt.Println("I: Updating list of packages")
 
     var wg sync.WaitGroup
-    errs := make([]error, Vidx.Length())
+    var err error
+    var errs []error
+
+    // Process package index first
+    errs = make([]error, Vidx.PidxLength())
     for i, vendorPidx := range Vidx.ListPidx() {
         wg.Add(1)
         go updatePdscListTask(i, vendorPidx, p, &wg, &errs[i])
@@ -98,10 +103,18 @@ func (p *PidxXML) Update() error {
 
     wg.Wait()
 
-    for _, err := range errs {
-        if err != nil {
-            return err
-        }
+    if err = AnyErr(errs); err != nil {
+        return err
+    }
+
+    // Now process package descriptors (vendors without pidx files)
+    errs = make([]error, Vidx.PdscLength())
+    for i, pdsc := range Vidx.ListPdsc() {
+        errs[i] = Pidx.addPdsc(pdsc)
+    }
+
+    if err = AnyErr(errs); err != nil {
+        return err
     }
 
     return nil

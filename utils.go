@@ -11,6 +11,17 @@ import (
 )
 
 
+func AnyErr(errs []error) error {
+    for _, err := range errs {
+        if err != nil {
+            return err
+        }
+    }
+
+    return nil
+}
+
+
 func ExitOnError(err error) {
     if err != nil {
         fmt.Fprintf(os.Stderr, "E: %s\n", err)
