@@ -10,9 +10,7 @@ ifneq (,$(findstring windows,$(OS)))
 endif
 
 
-SOURCES := $(wildcard commands/*.go) \
-           $(wildcard xml/*.go) \
-           $(wildcard *.go)
+SOURCES := $(wildcard *.go)
 
 
 all:

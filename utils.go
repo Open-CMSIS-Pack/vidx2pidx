@@ -1,13 +1,22 @@
-package utils
+package main
 
 
 import (
+    "fmt"
     "net/http"
     "io/ioutil"
     "os"
     "strings"
     "encoding/xml"
 )
+
+
+func ExitOnError(err error) {
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "E: %s\n", err)
+        os.Exit(-1)
+    }
+}
 
 
 func ReadURL(URL string) ([]byte, error) {
@@ -59,12 +68,17 @@ func ReadXML(path string,  targetStruct interface{}) error {
 
 func WriteXML(path string,  targetStruct interface{}) error {
 
-    file, err := xml.MarshalIndent(targetStruct, "", " ")
+    output, err := xml.MarshalIndent(targetStruct, "", " ")
     if err != nil {
         return err
     }
 
-	err = ioutil.WriteFile(path, file, 0666)
+    if path == "" {
+        os.Stdout.Write(output)
+        return nil
+    }
+
+	err = ioutil.WriteFile(path, output, 0666)
     if err != nil {
         return err
     }
