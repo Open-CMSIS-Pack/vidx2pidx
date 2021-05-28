@@ -7,9 +7,6 @@ import (
 )
 
 
-
-var binName = "cmpack-idx-gen"
-
 var flags struct {
     outputFileName string
     validatePidxFiles bool
@@ -19,7 +16,7 @@ var flags struct {
 // add -o option to print to a file
 // add --validate-pdsc to make sure information in pidx are correct
 var rootCmd = &cobra.Command{
-    Use:   "cmpack-idx-gen vendors.vidx",
+    Use:   "vidx2pidx vendors.vidx",
     Short: "Generates package index based on CMSIS-Pack vendors",
     Args: cobra.ExactArgs(1),
     Run: func(cmd *cobra.Command, args []string) {

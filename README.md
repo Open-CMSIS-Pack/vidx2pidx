@@ -1,25 +1,33 @@
-# CMSIS Pack Index Generator Tool
+# vidx2pidx: Open-CMSIS-Pack Package Index Generator Tool
 
-CMSIS-Pack intro goes here
+This is the git repository for the `vidx2pidx` tool. It takes in `*.vidx` file
+and generate a `pidx`-formatted output listing packages.
 
-# How to use it
+## Install
 
-1. Add a vendor index file (link-to-vdix-page)
+Just head to the release page and download the binary for your system.
 
-    $ cmpack-idx-gen add-vidx TheVendor https://the-vidx.com/TheVendor.vidx
 
-2. Update the list of packages
+## Usage
+```bash
+$ vidx2pidx vendor.vidx
 
-    $ cmpack-idx-gen update
+Options:
 
-3. Search for packages or components or devices
+  -h, --help        show usage and help info
+  -V, --version     show version and copyright info
+  -v, --verbose     show progress details
+  -o, --output      specify index file directory and name
+  -c, --cachedir    specify directory where downloaded pidx and pdsc files are stored (default ./.idxcache)
+  -f, --force       force update – ignore timestamp information
+  ```
 
-    $ cmpack-idx-gen search pack-you-are-looking-for
+## Developing
 
-4. Install a pack
+Make sure to have Go [installed](https://golang.org/doc/install) in your environment.
 
-    $ cmpack-idx-gen install TheVendor.ThePack[:.0.0.1]
-
-5. Remove a pack
-
-    $ cmpack-idx-gen remove TheVendor.ThePack[:.0.0.1]
+```bash
+$ git clone https://github.com/open-cmsis-pack/vidx2pidx
+$ cd vidx2pidx
+$ make
+```

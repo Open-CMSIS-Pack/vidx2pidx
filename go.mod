@@ -1,4 +1,4 @@
-module github.com/chaws/cmpack-idx-gen
+module github.com/open-cmsis-pack/vidx2pidx
 
 go 1.16
 
