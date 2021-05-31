@@ -1,13 +1,10 @@
 package main
 
-
 import (
-    "encoding/xml"
+	"encoding/xml"
 )
 
-
 var Vidx = new(VidxXML)
-
 
 //
 //  This file maintain a list of all available vendors
@@ -18,49 +15,43 @@ var Vidx = new(VidxXML)
 //  was modified
 //
 type VidxXML struct {
-    XMLName xml.Name `xml:"index"`
-    Timestamp string `xml:"timestamp"`
+	XMLName   xml.Name `xml:"index"`
+	Timestamp string   `xml:"timestamp"`
 
-    Vindex struct {
-        XMLName xml.Name `xml:"vindex"`
-        VendorPidxs []VendorPidx `xml:"pidx"`
-    } `xml:"vindex"`
+	Vindex struct {
+		XMLName     xml.Name     `xml:"vindex"`
+		VendorPidxs []VendorPidx `xml:"pidx"`
+	} `xml:"vindex"`
 
-    Pindex struct {
-        XMLName xml.Name `xml:"pindex"`
-        Pdscs []Pdsc `xml:"pdsc"`
-    } `xml:"pindex"`
+	Pindex struct {
+		XMLName xml.Name `xml:"pindex"`
+		Pdscs   []Pdsc   `xml:"pdsc"`
+	} `xml:"pindex"`
 }
-
 
 type VendorPidx struct {
-    XMLName xml.Name `xml:"pidx"`
-    Vendor string `xml:"vendor,attr"`
-    URL string `xml:"url,attr"`
-    Timestamp string `xml:"timestamp,attr"`
+	XMLName   xml.Name `xml:"pidx"`
+	Vendor    string   `xml:"vendor,attr"`
+	URL       string   `xml:"url,attr"`
+	Timestamp string   `xml:"timestamp,attr"`
 }
-
 
 func (v *VidxXML) Init(vidxFileName string) error {
-   return ReadXML(vidxFileName, v)
+	return ReadXML(vidxFileName, v)
 }
-
 
 func (v *VidxXML) ListPidx() []VendorPidx {
-    return v.Vindex.VendorPidxs
+	return v.Vindex.VendorPidxs
 }
-
 
 func (v *VidxXML) ListPdsc() []Pdsc {
-    return v.Pindex.Pdscs
+	return v.Pindex.Pdscs
 }
-
 
 func (v *VidxXML) PidxLength() int {
-    return len(v.Vindex.VendorPidxs)
+	return len(v.Vindex.VendorPidxs)
 }
 
-
 func (v *VidxXML) PdscLength() int {
-    return len(v.Pindex.Pdscs)
+	return len(v.Pindex.Pdscs)
 }

@@ -2,24 +2,18 @@
 OS   := $(or ${OS},${OS},linux)
 ARCH := $(or ${ARCH},${ARCH},amd64)
 
-
 # Path to lint tool
 GOLINTER ?= golangci-lint
 GOFORMATTER ?= gofmt
 
-
 # Determine binary file name
 BIN_NAME := vidx2pidx
-
-
 PROG := build/$(BIN_NAME)
 ifneq (,$(findstring windows,$(OS)))
     PROG=build/$(BIN_NAME).exe
 endif
 
-
 SOURCES := $(wildcard *.go)
-
 
 all:
 	@echo Pick one of:
@@ -34,23 +28,18 @@ all:
 	@echo Clean everything
 	@echo $$ make clean
 
-
 $(PROG): $(SOURCES)
 	@echo Building project
 	GOOS=$(OS) GOARCH=$(ARCH) go build -o $(PROG)
 
-
 run: $(PROG)
 	@./$(PROG) $(ARGS) || true
-
 
 lint:
 	$(GOLINTER) run
 
-
 format:
 	$(GOFORMATTER) -s -w .
-
 
 clean:
 	rm -rf build/*

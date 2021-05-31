@@ -1,6 +1,5 @@
 package main
 
-
-func main(){
-    RunCli()
+func main() {
+	RunCli()
 }
