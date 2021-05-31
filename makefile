@@ -5,6 +5,7 @@ ARCH := $(or ${ARCH},${ARCH},amd64)
 
 # Path to lint tool
 GOLINTER ?= golangci-lint
+GOFORMATTER ?= gofmt
 
 
 # Determine binary file name
@@ -45,6 +46,10 @@ run: $(PROG)
 
 lint:
 	$(GOLINTER) run
+
+
+format:
+	$(GOFORMATTER) -s -w .
 
 
 clean:
