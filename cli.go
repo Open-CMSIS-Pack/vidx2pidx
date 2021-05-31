@@ -45,7 +45,7 @@ var rootCmd = &cobra.Command{
 }
 
 func RunCli() {
-	rootCmd.PersistentFlags().StringVarP(&flags.outputFileName, "output", "o", "", "Save pidx to this file")
+	rootCmd.PersistentFlags().StringVarP(&flags.outputFileName, "output", "o", "index.pidx", "Save pidx to this file")
 	rootCmd.PersistentFlags().BoolVarP(&flags.validatePidxFiles, "validate-pidx", "", false, "Validate pidx files by checking pdsc files")
 	rootCmd.PersistentFlags().BoolVarP(&flags.version, "version", "V", false, "Output the version number of vidx2pidx and exit.")
 

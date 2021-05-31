@@ -77,7 +77,7 @@ func WriteXML(path string, targetStruct interface{}) error {
 		return err
 	}
 
-	if path == "" {
+	if path == "" || path == "-" {
 		os.Stdout.Write(output)
 		return nil
 	}
