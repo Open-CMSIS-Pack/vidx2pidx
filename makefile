@@ -3,6 +3,10 @@ OS   := $(or ${OS},${OS},linux)
 ARCH := $(or ${ARCH},${ARCH},amd64)
 
 
+# Path to lint tool
+GOLINTER ?= golangci-lint
+
+
 # Determine binary file name
 BIN_NAME := vidx2pidx
 
@@ -37,6 +41,10 @@ $(PROG): $(SOURCES)
 
 run: $(PROG)
 	@./$(PROG) $(ARGS) || true
+
+
+lint:
+	$(GOLINTER) run
 
 
 clean:
