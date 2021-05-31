@@ -12,9 +12,6 @@ import (
 var Pidx = new(PidxXML)
 
 
-var pidxFileName = ""
-
-
 //
 //  This file contains all available packages from
 //  all vendors.
@@ -81,7 +78,9 @@ func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.W
     }
 
     for _, pdsc := range incomingPidx.ListPdsc() {
-        pidx.addPdsc(pdsc)
+        if *err = pidx.addPdsc(pdsc); *err != nil {
+            return
+        }
     }
 }
 

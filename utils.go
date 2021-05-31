@@ -71,7 +71,9 @@ func ReadXML(path string,  targetStruct interface{}) error {
         }
     }
 
-    xml.Unmarshal(contents, targetStruct)
+    if err = xml.Unmarshal(contents, targetStruct); err != nil {
+        return err
+    }
 
     return nil
 }
