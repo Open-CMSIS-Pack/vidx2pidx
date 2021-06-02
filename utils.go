@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -21,7 +20,7 @@ func AnyErr(errs []error) error {
 
 func ExitOnError(err error) {
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "E: %s\n", err)
+		Logger.Error(err.Error())
 		os.Exit(-1)
 	}
 }

@@ -48,15 +48,15 @@ func (p *PidxXML) findPdsc(targetPdsc Pdsc) int {
 }
 
 func (p *PidxXML) ListPdsc() []Pdsc {
-	fmt.Println("D: Listing available packages")
+	Logger.Debug("Listing available packages")
 	return p.Pindex.Pdscs
 }
 
 func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.WaitGroup, err *error) {
 	defer wg.Done()
 
-	url := fmt.Sprintf("%s%s.pidx", vendorPidx.URL, vendorPidx.Vendor)
-	fmt.Printf("I: [%d] Fetching packages list from %s\n", id, url)
+	url := vendorPidx.URL + vendorPidx.Vendor + ".pidx"
+	Logger.Info("[%d] Fetching packages list from %s\n", id, url)
 
 	incomingPidx := new(PidxXML)
 	if *err = ReadXML(url, &incomingPidx); *err != nil {
@@ -76,7 +76,7 @@ func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.W
 }
 
 func (p *PidxXML) Update() error {
-	fmt.Println("I: Updating list of packages")
+	Logger.Info("Updating list of packages")
 
 	var wg sync.WaitGroup
 	var err error

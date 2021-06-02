@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -30,13 +29,13 @@ var rootCmd = &cobra.Command{
 		}
 
 		if len(args) == 0 {
-			fmt.Fprintf(os.Stderr, "E: Empty arguments list. See --help for more information.\n")
+			Logger.Error("Empty arguments list. See --help for more information.")
 			return
 		}
 
 		vidxFileName := args[0]
 
-		fmt.Printf("I: Reading '%s'\n", vidxFileName)
+		Logger.Info("Reading '%s'\n", vidxFileName)
 
 		ExitOnError(Vidx.Init(vidxFileName))
 		ExitOnError(Pidx.Update())
