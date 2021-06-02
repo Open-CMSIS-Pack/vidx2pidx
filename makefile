@@ -41,9 +41,15 @@ lint:
 format:
 	$(GOFORMATTER) -s -w .
 
+format-check:
+	$(GOFORMATTER) -d . | tee format-check.out
+	test ! -s format-check.out
+
 .PHONY: test
 test:
 	TESTING=1 go test
+
+test-all: format-check lint test
 
 clean:
 	rm -rf build/*
