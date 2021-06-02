@@ -43,7 +43,7 @@ format:
 
 .PHONY: test
 test:
-	go test
+	TESTING=1 go test
 
 clean:
 	rm -rf build/*

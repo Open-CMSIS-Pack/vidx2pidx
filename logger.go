@@ -24,13 +24,8 @@ type LoggerType struct {
 }
 
 func (l *LoggerType) output(level LevelType, format string, args ...interface{}) {
-	file := l.file
-	if level == ERROR {
-		file = os.Stderr
-	}
-
 	if l.level >= level {
-		fmt.Fprintf(file, level.String() + format + "\n", args...)
+		fmt.Fprintf(l.file, level.String() + format + "\n", args...)
 	}
 }
 
@@ -56,5 +51,14 @@ func (l *LoggerType) SetFile(file io.Writer) {
 
 var Logger = LoggerType {
 	level: ERROR,
-	file: os.Stdout,
+}
+
+func init() {
+	if os.Getenv("TESTING") == "1" {
+		f, err := os.OpenFile("testing.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+		ExitOnError(err)
+		Logger.SetFile(f)
+	} else {
+		Logger.SetFile(os.Stdout)
+	}
 }
