@@ -41,5 +41,9 @@ lint:
 format:
 	$(GOFORMATTER) -s -w .
 
+.PHONY: test
+test:
+	go test
+
 clean:
 	rm -rf build/*
