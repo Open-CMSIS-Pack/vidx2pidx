@@ -1,8 +1,8 @@
 package main
 
 import (
-	"io"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -20,12 +20,12 @@ func (l LevelType) String() string {
 
 type LoggerType struct {
 	level LevelType
-	file io.Writer
+	file  io.Writer
 }
 
 func (l *LoggerType) output(level LevelType, format string, args ...interface{}) {
 	if l.level >= level {
-		fmt.Fprintf(l.file, level.String() + format + "\n", args...)
+		fmt.Fprintf(l.file, level.String()+format+"\n", args...)
 	}
 }
 
@@ -49,7 +49,7 @@ func (l *LoggerType) SetFile(file io.Writer) {
 	l.file = file
 }
 
-var Logger = LoggerType {
+var Logger = LoggerType{
 	level: ERROR,
 }
 

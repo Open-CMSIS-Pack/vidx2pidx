@@ -1,10 +1,10 @@
 package main
 
 import (
-	"testing"
+	"bou.ke/monkey"
 	"errors"
 	"os"
-	"bou.ke/monkey"
+	"testing"
 )
 
 func TestAnyErr(t *testing.T) {
