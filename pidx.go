@@ -76,7 +76,7 @@ func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.W
 	}
 }
 
-func (p *PidxXML) Update() error {
+func (p *PidxXML) Update(vidx *VidxXML) error {
 	Logger.Info("Updating list of packages")
 
 	var wg sync.WaitGroup
@@ -84,8 +84,8 @@ func (p *PidxXML) Update() error {
 	var errs []error
 
 	// Process package index first
-	errs = make([]error, Vidx.PidxLength())
-	for i, vendorPidx := range Vidx.ListPidx() {
+	errs = make([]error, vidx.PidxLength())
+	for i, vendorPidx := range vidx.ListPidx() {
 		wg.Add(1)
 		go updatePdscListTask(i, vendorPidx, p, &wg, &errs[i])
 	}
@@ -97,9 +97,9 @@ func (p *PidxXML) Update() error {
 	}
 
 	// Now process package descriptors (vendors without pidx files)
-	errs = make([]error, Vidx.PdscLength())
-	for i, pdsc := range Vidx.ListPdsc() {
-		errs[i] = Pidx.addPdsc(pdsc)
+	errs = make([]error, vidx.PdscLength())
+	for i, pdsc := range vidx.ListPdsc() {
+		errs[i] = p.addPdsc(pdsc)
 	}
 
 	if err = AnyErr(errs); err != nil {
