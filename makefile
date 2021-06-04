@@ -57,7 +57,7 @@ coverage-report:
 
 coverage-check:
 	TESTING=1 go test -coverprofile cover.out
-	grep -v -e " 1$$" cover.out | tee coverage-check.out
+	grep -v -e " 1$$" cover.out | grep -v main.go | tee coverage-check.out
 	test ! -s coverage-check.out
 
 clean:
