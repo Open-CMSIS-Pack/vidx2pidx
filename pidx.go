@@ -57,18 +57,14 @@ func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.W
 	defer wg.Done()
 
 	url := vendorPidx.URL + vendorPidx.Vendor + ".pidx"
-	Logger.Info("[%d] Fetching packages list from %s\n", id, url)
+	Logger.Info("[%d] Fetching packages list from %s", id, url)
 
 	incomingPidx := new(PidxXML)
 	if *err = ReadXML(url, &incomingPidx); *err != nil {
 		return
 	}
 
-	if vendorPidx.Timestamp == incomingPidx.Timestamp {
-		// Nothing changed, avoid extra work
-		return
-	}
-
+	Logger.Info("Adding pdscs")
 	for _, pdsc := range incomingPidx.ListPdsc() {
 		if *err = pidx.addPdsc(pdsc); *err != nil {
 			return
