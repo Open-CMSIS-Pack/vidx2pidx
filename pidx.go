@@ -21,6 +21,8 @@ type PidxXML struct {
 		XMLName xml.Name `xml:"pindex"`
 		Pdscs   []Pdsc   `xml:"pdsc"`
 	} `xml:"pindex"`
+
+	pdscList map[string]bool
 }
 
 type Pdsc struct {
@@ -33,18 +35,13 @@ type Pdsc struct {
 }
 
 func (p *PidxXML) addPdsc(pdsc Pdsc) error {
-	idx := p.findPdsc(pdsc)
-	if idx != -1 {
+	if p.pdscList[pdsc.getURL()] {
 		message := fmt.Sprintf("Package %s/%s/%s already exists!", pdsc.Vendor, pdsc.Name, pdsc.Version)
 		return errors.New(message)
 	}
 	p.Pindex.Pdscs = append(p.Pindex.Pdscs, pdsc)
+	p.pdscList[pdsc.getURL()] = true
 	return nil
-}
-
-func (p *PidxXML) findPdsc(targetPdsc Pdsc) int {
-	// Use map for this
-	return -1
 }
 
 func (p *PidxXML) ListPdsc() []Pdsc {
@@ -106,4 +103,8 @@ func (p *PidxXML) Update() error {
 	}
 
 	return nil
+}
+
+func (p *Pdsc) getURL() string {
+	return p.URL + p.Vendor + "." + p.Name + ".pdsc"
 }
