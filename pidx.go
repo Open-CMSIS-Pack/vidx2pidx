@@ -7,8 +7,6 @@ import (
 	"sync"
 )
 
-var Pidx = new(PidxXML)
-
 //
 //  This file contains all available packages from
 //  all vendors.
@@ -32,6 +30,12 @@ type Pdsc struct {
 	Name      string   `xml:"name,attr"`
 	Version   string   `xml:"version,attr"`
 	Timestamp string   `xml:"timestamp,attr"`
+}
+
+func NewPidx() *PidxXML {
+	p := new(PidxXML)
+	p.pdscList = make(map[string]bool)
+	return p
 }
 
 func (p *PidxXML) addPdsc(pdsc Pdsc) error {

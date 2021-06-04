@@ -37,6 +37,9 @@ var rootCmd = &cobra.Command{
 
 		Logger.Info("Reading '%s'\n", vidxFileName)
 
+		Vidx := NewVidx()
+		Pidx := NewPidx()
+
 		ExitOnError(Vidx.Init(vidxFileName))
 		ExitOnError(Pidx.Update())
 		ExitOnError(WriteXML(flags.outputFileName, Pidx))

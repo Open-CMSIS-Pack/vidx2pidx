@@ -4,8 +4,6 @@ import (
 	"encoding/xml"
 )
 
-var Vidx = new(VidxXML)
-
 //
 //  This file maintain a list of all available vendors
 //  and their pidx file.
@@ -34,6 +32,10 @@ type VendorPidx struct {
 	Vendor    string   `xml:"vendor,attr"`
 	URL       string   `xml:"url,attr"`
 	Timestamp string   `xml:"timestamp,attr"`
+}
+
+func NewVidx() *VidxXML {
+	return new(VidxXML)
 }
 
 func (v *VidxXML) Init(vidxFileName string) error {
