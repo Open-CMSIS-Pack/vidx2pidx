@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/xml"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -30,6 +32,11 @@ func ReadURL(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return empty, err
+	}
+
+	if resp.StatusCode/100 != 2 {
+		message := fmt.Sprintf("request did not return successfully (%v)", resp.StatusCode)
+		return empty, errors.New(message)
 	}
 
 	defer resp.Body.Close()
