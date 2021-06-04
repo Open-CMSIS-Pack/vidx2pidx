@@ -47,7 +47,7 @@ format-check:
 
 .PHONY: test
 test:
-	TESTING=1 go test
+	TESTING=1 go test $(ARGS)
 
 test-all: format-check lint test
 
