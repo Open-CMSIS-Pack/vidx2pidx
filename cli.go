@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/spf13/cobra"
 )
@@ -12,43 +13,40 @@ var flags struct {
 	version           bool
 }
 
-func printVersionAndLicense() {
-	fmt.Printf("vidx2pidx version %v\n", Version)
-	fmt.Printf("%v\n", License)
+func printVersionAndLicense(file io.Writer) {
+	fmt.Fprintf(file, "vidx2pidx version %v\n", Version)
+	fmt.Fprintf(file, "%v\n", License)
 }
 
-// add -o option to print to a file
-// add --validate-pdsc to make sure information in pidx are correct
-var rootCmd = &cobra.Command{
-	Use:   "vidx2pidx vendors.vidx",
-	Short: "This utility converts a vendor index file into a vendor independent package index file.",
-	Run: func(cmd *cobra.Command, args []string) {
-		if flags.version {
-			printVersionAndLicense()
-			return
-		}
+func NewCli() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vidx2pidx vendors.vidx",
+		Short: "This utility converts a vendor index file into a vendor independent package index file.",
+		Run: func(cmd *cobra.Command, args []string) {
+			if flags.version {
+				printVersionAndLicense(cmd.OutOrStdout())
+				return
+			}
 
-		if len(args) == 0 {
-			Logger.Error("Empty arguments list. See --help for more information.")
-			return
-		}
+			if len(args) == 0 {
+				Logger.Error("Empty arguments list. See --help for more information.")
+				return
+			}
 
-		vidxFileName := args[0]
-		Logger.Info("Reading '%s'\n", vidxFileName)
+			vidxFileName := args[0]
+			Logger.Info("Reading '%s'\n", vidxFileName)
 
-		Vidx := NewVidx()
-		Pidx := NewPidx()
+			Vidx := NewVidx()
+			Pidx := NewPidx()
 
-		ExitOnError(Vidx.Init(vidxFileName))
-		ExitOnError(Pidx.Update(Vidx))
-		ExitOnError(WriteXML(flags.outputFileName, Pidx))
-	},
-}
+			ExitOnError(Vidx.Init(vidxFileName))
+			ExitOnError(Pidx.Update(Vidx))
+			ExitOnError(WriteXML(flags.outputFileName, Pidx))
+		},
+	}
 
-func RunCli() {
-	rootCmd.PersistentFlags().StringVarP(&flags.outputFileName, "output", "o", "index.pidx", "Save pidx to this file")
-	rootCmd.PersistentFlags().BoolVarP(&flags.validatePidxFiles, "validate-pidx", "", false, "Validate pidx files by checking pdsc files")
-	rootCmd.PersistentFlags().BoolVarP(&flags.version, "version", "V", false, "Output the version number of vidx2pidx and exit.")
+	cmd.Flags().StringVarP(&flags.outputFileName, "output", "o", "index.pidx", "Save pidx to this file")
+	cmd.Flags().BoolVarP(&flags.version, "version", "V", false, "Output the version number of vidx2pidx and exit.")
 
-	ExitOnError(rootCmd.Execute())
+	return cmd
 }

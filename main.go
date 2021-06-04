@@ -1,5 +1,6 @@
 package main
 
 func main() {
-	RunCli()
+	cmd := NewCli()
+	ExitOnError(cmd.Execute())
 }
