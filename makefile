@@ -49,7 +49,16 @@ format-check:
 test:
 	TESTING=1 go test $(ARGS)
 
-test-all: format-check lint test
+test-all: format-check coverage-check lint test
+
+coverage-report: 
+	TESTING=1 go test -coverprofile cover.out
+	go tool cover -html=cover.out
+
+coverage-check:
+	TESTING=1 go test -coverprofile cover.out
+	grep -v -e " 1$$" cover.out | tee coverage-check.out
+	test ! -s coverage-check.out
 
 clean:
 	rm -rf build/*
