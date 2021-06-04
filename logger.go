@@ -55,9 +55,11 @@ var Logger = LoggerType{
 
 func init() {
 	if os.Getenv("TESTING") == "1" {
+		// When testing, make sure to write as much details as possible out to a test log file
 		f, err := os.OpenFile("testing.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 		ExitOnError(err)
 		Logger.SetFile(f)
+		Logger.SetLevel(DEBUG)
 	} else {
 		Logger.SetFile(os.Stdout)
 	}
