@@ -25,9 +25,9 @@ func ExitOnError(err error) {
 	}
 }
 
-func ReadURL(URL string) ([]byte, error) {
+func ReadURL(url string) ([]byte, error) {
 	var empty []byte
-	resp, err := http.Get(URL)
+	resp, err := http.Get(url)
 	if err != nil {
 		return empty, err
 	}
