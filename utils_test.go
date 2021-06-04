@@ -59,6 +59,8 @@ func TestExitOnError(t *testing.T) {
 	if exitCode != -1 {
 		t.Error("ExitOnError should exit when error is given")
 	}
+
+	monkey.Unpatch(os.Exit)
 }
 
 func TestReadURL(t *testing.T) {
@@ -71,6 +73,8 @@ func TestReadURL(t *testing.T) {
 		if err == nil || len(response) > 0 {
 			t.Error("ReadURL should return an empty response and an error on bad URLs")
 		}
+
+		monkey.Unpatch(http.Get)
 	})
 
 	t.Run("test bad response", func(t *testing.T) {
@@ -171,6 +175,8 @@ func TestReadXML(t *testing.T) {
 		}
 
 		AssertEqual(t, err.Error(), errString)
+
+		monkey.Unpatch(io.ReadAll)
 	})
 
 	t.Run("test read malformed xml", func(t *testing.T) {
@@ -184,6 +190,8 @@ func TestReadXML(t *testing.T) {
 		}
 
 		AssertEqual(t, err.Error(), "XML syntax error on line 1: unexpected EOF")
+
+		monkey.Unpatch(io.ReadAll)
 	})
 
 	t.Run("test all good", func(t *testing.T) {
@@ -197,6 +205,8 @@ func TestReadXML(t *testing.T) {
 		}
 
 		AssertEqual(t, dummyXML.Contents, "Dummy content")
+
+		monkey.Unpatch(io.ReadAll)
 	})
 }
 
