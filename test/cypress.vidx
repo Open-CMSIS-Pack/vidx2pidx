@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<index schemaVersion="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="PackIndex.xsd">
+  <vendor>Keil</vendor>
+  <url>www.keil.com/pack</url>
+  <timestamp>2021-01-01T00:00:00</timestamp>
+  <vindex>
+    <!-- <pidx vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/" /> -->
+    <pidx vendor="Cypress" url="test/" />
+  </vindex>
+  <pindex>
+    <pdsc url="http://packs.download.atmel.com/" vendor="Atmel" name="SAM3A_DFP" version="1.0.50" />
+  </pindex>
+</index>

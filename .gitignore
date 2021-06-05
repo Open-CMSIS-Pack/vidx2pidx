@@ -1,3 +1,4 @@
 build/
 testing.log
-format-check.out
+*.out
+index.pidx
