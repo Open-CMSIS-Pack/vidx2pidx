@@ -161,50 +161,7 @@ func TestUpdate(t *testing.T) {
 	})
 }
 
-func ExampleUpdateSinglePidx() {
-	xml := `<index>
-                  <vendor>TheVendor</vendor>
-                  <url>http://vendor.com/</url>
-                  <timestamp></timestamp>
-                  <pindex>
-                    <pdsc url="http://vendor.com/" vendor="TheVendor" name="ThePack" version="1.2.3" />
-                    <pdsc url="http://vendor.com/" vendor="TheVendor" name="TheOtherPack" version="1.1.0" />
-                  </pindex>
-                </index>`
-
-	pidxServer := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprint(w, xml)
-			},
-		),
-	)
-
-	vidx := NewVidx()
-	vidx.Vindex.VendorPidxs = append(vidx.Vindex.VendorPidxs, VendorPidx{
-		Vendor: "TheVendor",
-		URL:    pidxServer.URL + "/",
-	})
-
-	pidx := NewPidx()
-	err := pidx.Update(vidx)
-	if err != nil {
-		fmt.Println("Unexpected: ", err)
-		return
-	}
-
-	WriteXML("", pidx)
-	// Output:
-	// <index>
-	//  <timestamp></timestamp>
-	//  <pindex>
-	//   <pdsc vendor="TheVendor" url="http://vendor.com/" name="ThePack" version="1.2.3" timestamp=""></pdsc>
-	//   <pdsc vendor="TheVendor" url="http://vendor.com/" name="TheOtherPack" version="1.1.0" timestamp=""></pdsc>
-	//  </pindex>
-	// </index>
-}
-
-func ExampleUpdateWithPidxAndPdsc() {
+func ExamplePidxXML_Update() {
 	Logger.SetLevel(DEBUG)
 	xml := `<index>
                   <vendor>TheVendor</vendor>
@@ -237,13 +194,8 @@ func ExampleUpdateWithPidxAndPdsc() {
 	})
 
 	pidx := NewPidx()
-	err := pidx.Update(vidx)
-	if err != nil {
-		fmt.Println("Unexpected: ", err)
-		return
-	}
-
-	WriteXML("", pidx)
+	ExitOnError(pidx.Update(vidx))
+	ExitOnError(WriteXML("", pidx))
 	// Output:
 	// <index>
 	//  <timestamp></timestamp>

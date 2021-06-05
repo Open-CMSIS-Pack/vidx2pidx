@@ -54,11 +54,10 @@ func TestCli(t *testing.T) {
 	})
 }
 
-func ExampleSampleOutput() {
-
+func ExampleNewCli() {
 	cmd := NewCli()
 	cmd.SetArgs([]string{"test/cypress.vidx", "-o", "-"})
-	cmd.Execute()
+	ExitOnError(cmd.Execute())
 	// Output:
 	// <index>
 	//  <timestamp></timestamp>

@@ -275,29 +275,14 @@ func TestWriteXML(t *testing.T) {
 	})
 }
 
-func ExampleWriteXMLToStdout() {
+func ExampleWriteXML() {
 	type dummyXML struct {
 		Dummy    xml.Name `xml:"dummy"`
 		Contents string   `xml:"contents"`
 	}
 	xml := new(dummyXML)
 	xml.Contents = "dummy content"
-	WriteXML("", xml)
-	// Output:
-	// <dummyXML>
-	//  <dummy></dummy>
-	//  <contents>dummy content</contents>
-	// </dummyXML>
-}
-
-func ExampleWriteXMLToStdoutWithDashForFileName() {
-	type dummyXML struct {
-		Dummy    xml.Name `xml:"dummy"`
-		Contents string   `xml:"contents"`
-	}
-	xml := new(dummyXML)
-	xml.Contents = "dummy content"
-	WriteXML("-", xml)
+	ExitOnError(WriteXML("", xml))
 	// Output:
 	// <dummyXML>
 	//  <dummy></dummy>
