@@ -54,18 +54,17 @@ func TestCli(t *testing.T) {
 	})
 }
 
-func ExampleSampleOutput() {
-
-		cmd := NewCli()
-		cmd.SetArgs([]string{"test/cypress.vidx", "-o", "-"})
-		cmd.Execute()
-		// Output:
-		// <index>
-		//  <timestamp></timestamp>
-		//  <pindex>
-		//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC6_DFP/" name="PSoC6_DFP" version="1.2.0" timestamp=""></pdsc>
-		//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC4_DFP/" name="PSoC4_DFP" version="1.1.0" timestamp=""></pdsc>
-		//   <pdsc vendor="Atmel" url="http://packs.download.atmel.com/" name="SAM3A_DFP" version="1.0.50" timestamp=""></pdsc>
-		//  </pindex>
-		// </index>
+func ExampleNewCli() {
+	cmd := NewCli()
+	cmd.SetArgs([]string{"test/cypress.vidx", "-o", "-"})
+	ExitOnError(cmd.Execute())
+	// Output:
+	// <index>
+	//  <timestamp></timestamp>
+	//  <pindex>
+	//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC6_DFP/" name="PSoC6_DFP" version="1.2.0" timestamp=""></pdsc>
+	//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC4_DFP/" name="PSoC4_DFP" version="1.1.0" timestamp=""></pdsc>
+	//   <pdsc vendor="Atmel" url="http://packs.download.atmel.com/" name="SAM3A_DFP" version="1.0.50" timestamp=""></pdsc>
+	//  </pindex>
+	// </index>
 }
