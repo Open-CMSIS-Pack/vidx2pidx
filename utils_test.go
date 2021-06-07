@@ -149,7 +149,7 @@ func TestReadXML(t *testing.T) {
 	})
 
 	t.Run("test local xml file not found or fail to open", func(t *testing.T) {
-		fileName := time.Now().String()
+		fileName := fmt.Sprintf("%d", time.Now().UnixNano())
 		err := ReadXML(fileName, &dummyXML)
 		if err == nil {
 			t.Error("ReadXML should return error when local XML file is not found")
