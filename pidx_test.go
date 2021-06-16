@@ -20,7 +20,7 @@ func HTTPServer(output string) *httptest.Server {
 func TestAddPdsc(t *testing.T) {
 	t.Run("test fail if adding two existing packages", func(t *testing.T) {
 		pidx := NewPidx()
-		pdsc := Pdsc{
+		pdsc := PdscTag{
 			Vendor:  "TheVendor",
 			URL:     "http://the.url/",
 			Name:    "TheName",
@@ -45,14 +45,14 @@ func TestAddPdsc(t *testing.T) {
 
 	t.Run("test adding two different packages", func(t *testing.T) {
 		pidx := NewPidx()
-		pdsc1 := Pdsc{
+		pdsc1 := PdscTag{
 			Vendor:  "TheVendor",
 			URL:     "http://the.url/",
 			Name:    "TheName",
 			Version: "0.0.1",
 		}
 
-		pdsc2 := Pdsc{
+		pdsc2 := PdscTag{
 			Vendor:  "TheVendor2",
 			URL:     "http://the.url/",
 			Name:    "TheName2",
@@ -144,7 +144,7 @@ func TestUpdate(t *testing.T) {
 			Vendor: "TheVendor",
 			URL:    pidxServer.URL + "/",
 		})
-		vidx.Pindex.Pdscs = append(vidx.Pindex.Pdscs, Pdsc{
+		vidx.Pindex.Pdscs = append(vidx.Pindex.Pdscs, PdscTag{
 			Vendor:  "TheVendor",
 			URL:     "http://vendor.com/",
 			Name:    "ThePack",
@@ -186,7 +186,7 @@ func ExamplePidxXML_Update() {
 		Vendor: "TheVendor",
 		URL:    pidxServer.URL + "/",
 	})
-	vidx.Pindex.Pdscs = append(vidx.Pindex.Pdscs, Pdsc{
+	vidx.Pindex.Pdscs = append(vidx.Pindex.Pdscs, PdscTag{
 		Vendor:  "TheOtherVendor",
 		URL:     "http://other-vendor.com/",
 		Name:    "ThePackage",

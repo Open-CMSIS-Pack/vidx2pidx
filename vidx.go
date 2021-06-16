@@ -22,8 +22,8 @@ type VidxXML struct {
 	} `xml:"vindex"`
 
 	Pindex struct {
-		XMLName xml.Name `xml:"pindex"`
-		Pdscs   []Pdsc   `xml:"pdsc"`
+		XMLName xml.Name  `xml:"pindex"`
+		Pdscs   []PdscTag `xml:"pdsc"`
 	} `xml:"pindex"`
 }
 
@@ -46,7 +46,7 @@ func (v *VidxXML) ListPidx() []VendorPidx {
 	return v.Vindex.VendorPidxs
 }
 
-func (v *VidxXML) ListPdsc() []Pdsc {
+func (v *VidxXML) ListPdsc() []PdscTag {
 	return v.Pindex.Pdscs
 }
 

@@ -16,14 +16,14 @@ type PidxXML struct {
 	Timestamp string   `xml:"timestamp"`
 
 	Pindex struct {
-		XMLName xml.Name `xml:"pindex"`
-		Pdscs   []Pdsc   `xml:"pdsc"`
+		XMLName xml.Name  `xml:"pindex"`
+		Pdscs   []PdscTag `xml:"pdsc"`
 	} `xml:"pindex"`
 
 	pdscList map[string]bool
 }
 
-type Pdsc struct {
+type PdscTag struct {
 	XMLName   xml.Name `xml:"pdsc"`
 	Vendor    string   `xml:"vendor,attr"`
 	URL       string   `xml:"url,attr"`
@@ -38,7 +38,7 @@ func NewPidx() *PidxXML {
 	return p
 }
 
-func (p *PidxXML) addPdsc(pdsc Pdsc) error {
+func (p *PidxXML) addPdsc(pdsc PdscTag) error {
 	if p.pdscList[pdsc.getURL()] {
 		message := fmt.Sprintf("Package %s/%s/%s already exists!", pdsc.Vendor, pdsc.Name, pdsc.Version)
 		return errors.New(message)
@@ -48,7 +48,7 @@ func (p *PidxXML) addPdsc(pdsc Pdsc) error {
 	return nil
 }
 
-func (p *PidxXML) ListPdsc() []Pdsc {
+func (p *PidxXML) ListPdsc() []PdscTag {
 	Logger.Debug("Listing available packages")
 	return p.Pindex.Pdscs
 }
@@ -105,6 +105,6 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 	return nil
 }
 
-func (p *Pdsc) getURL() string {
+func (p *PdscTag) getURL() string {
 	return p.URL + p.Vendor + "." + p.Name + ".pdsc"
 }
