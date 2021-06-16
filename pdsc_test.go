@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestPdscXML(t *testing.T) {
@@ -15,9 +15,9 @@ func TestPdscXML(t *testing.T) {
 		}
 
 		pdscXML := PdscXML{
-			Vendor:  "TheVendor",
-			URL:     "http://the.url/",
-			Name:    "TheName",
+			Vendor: "TheVendor",
+			URL:    "http://the.url/",
+			Name:   "TheName",
 		}
 		release := ReleaseTag{
 			Version: "0.0.1",
@@ -39,9 +39,9 @@ func TestPdscXML(t *testing.T) {
 		}
 
 		pdscXML := PdscXML{
-			Vendor:  "TheVendor2",
-			URL:     "http://the.url2/",
-			Name:    "TheName2",
+			Vendor: "TheVendor2",
+			URL:    "http://the.url2/",
+			Name:   "TheName2",
 		}
 		release := ReleaseTag{
 			Version: "0.0.2",
@@ -61,9 +61,9 @@ func TestPdscXML(t *testing.T) {
 	t.Run("test latest version", func(t *testing.T) {
 		var latest string
 		pdscXML := PdscXML{
-			Vendor:  "TheVendor",
-			URL:     "http://the.url/",
-			Name:    "TheName",
+			Vendor: "TheVendor",
+			URL:    "http://the.url/",
+			Name:   "TheName",
 		}
 
 		latest = pdscXML.LatestVersion()
@@ -84,9 +84,9 @@ func TestPdscXML(t *testing.T) {
 
 	t.Run("test pdscXML to pdscTag generation", func(t *testing.T) {
 		pdscXML := PdscXML{
-			Vendor:  "TheVendor",
-			URL:     "http://the.url/",
-			Name:    "TheName",
+			Vendor: "TheVendor",
+			URL:    "http://the.url/",
+			Name:   "TheName",
 		}
 		release := ReleaseTag{
 			Version: "0.0.1",

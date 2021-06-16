@@ -130,7 +130,7 @@ func TestAddPdsc(t *testing.T) {
 
 		newPdscTag := pdscList[0]
 		if newPdscTag.Version != "0.0.2" {
-			  t.Error("AddPdsc on a mismatch should add the pdsc tag generated from the pdsc file")
+			t.Error("AddPdsc on a mismatch should add the pdsc tag generated from the pdsc file")
 		}
 	})
 
@@ -139,9 +139,6 @@ func TestAddPdsc(t *testing.T) {
 		monkey.Patch(ReadXML, func(string, interface{}) error {
 			return errors.New(errMessage)
 		})
-
-
-
 
 		pidx := NewPidx()
 
@@ -172,7 +169,7 @@ func TestAddPdsc(t *testing.T) {
 		}
 
 		if pdscTag != pdscList[0] {
-			  t.Error("AddPdsc added something different than the original pdsc tag")
+			t.Error("AddPdsc added something different than the original pdsc tag")
 		}
 
 		monkey.Unpatch(ReadXML)

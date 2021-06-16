@@ -130,7 +130,7 @@ func TestReadURL(t *testing.T) {
 			t.Error("ReadURL should return error when not able to write to cache")
 		}
 
-		if ! os.IsNotExist(err) {
+		if !os.IsNotExist(err) {
 			t.Errorf("Error should be related to no existing directory, instead got %s", err)
 		}
 	})
