@@ -1,10 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"bou.ke/monkey"
 )
 
 func HTTPServer(output string) *httptest.Server {
@@ -78,6 +81,101 @@ func TestAddPdsc(t *testing.T) {
 		if len(pdscList) != 2 || pdscList[1] != pdsc2 {
 			t.Error("AddPdsc should not fail to add a valid pdsc")
 		}
+	})
+
+	t.Run("test force validating pdsc tag against actual pdsc file", func(t *testing.T) {
+		xml := `<package>
+			  <vendor>TheVendor</vendor>
+			  <name>TheName</name>
+			  <url>http://vendor.com/</url>
+			  <timestamp></timestamp>
+			  <releases>
+			    <!-- The version is intentionally different, to show off a pdsc mismatch -->
+			    <release version="0.0.2" />
+			  </releases>
+			</package>`
+		pdscServer := HTTPServer(xml)
+
+		pidx := NewPidx()
+
+		// Force checking pdsc file
+		pidx.SetForce(true)
+
+		pdscTag := PdscTag{
+			Vendor:  "TheVendor",
+			URL:     pdscServer.URL + "/",
+			Name:    "TheName",
+			Version: "0.0.1",
+		}
+
+		err := pidx.addPdsc(pdscTag)
+		if err == nil {
+			t.Errorf("AddPdsc should return an error with the mismatchin version")
+		}
+
+		expected := fmt.Sprintf("Pdsc tag '%s%s' does not match the actual file:", pdscTag.URL, pdscTag.Name)
+		expected += fmt.Sprintf(" URL('%s' != '%s')", "http://vendor.com/", pdscTag.URL)
+		expected += fmt.Sprintf(" Version('%s' != '%s')", "0.0.2", pdscTag.Version)
+
+		AssertEqual(t, err.Error(), expected)
+
+		pdscList := pidx.ListPdsc()
+		if len(pdscList) == 0 {
+			t.Error("AddPdsc should still add the pdsc despite the mismatch")
+		}
+
+		if len(pdscList) != 1 {
+			t.Error("AddPdsc should still add just one pdsc on mismatch")
+		}
+
+		newPdscTag := pdscList[0]
+		if newPdscTag.Version != "0.0.2" {
+			  t.Error("AddPdsc on a mismatch should add the pdsc tag generated from the pdsc file")
+		}
+	})
+
+	t.Run("test force validating is ignored when pdsc is unreachable", func(t *testing.T) {
+		errMessage := "failed to read XML"
+		monkey.Patch(ReadXML, func(string, interface{}) error {
+			return errors.New(errMessage)
+		})
+
+
+
+
+		pidx := NewPidx()
+
+		// Force checking pdsc file
+		pidx.SetForce(true)
+
+		pdscTag := PdscTag{
+			Vendor:  "TheVendor",
+			URL:     "http://vendor.com/",
+			Name:    "TheName",
+			Version: "0.0.1",
+		}
+
+		err := pidx.addPdsc(pdscTag)
+		if err == nil {
+			t.Errorf("AddPdsc should return an error when force checking a pdsc file that's unreachable")
+		}
+
+		AssertEqual(t, err.Error(), errMessage)
+
+		pdscList := pidx.ListPdsc()
+		if len(pdscList) == 0 {
+			t.Error("AddPdsc should still add the pdsc despite an unreachable pdsc file")
+		}
+
+		if len(pdscList) != 1 {
+			t.Error("AddPdsc should still add just one pdsc on unreachable pdsc file")
+		}
+
+		if pdscTag != pdscList[0] {
+			  t.Error("AddPdsc added something different than the original pdsc tag")
+		}
+
+		monkey.Unpatch(ReadXML)
 	})
 }
 

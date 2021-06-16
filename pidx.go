@@ -21,6 +21,7 @@ type PidxXML struct {
 	} `xml:"pindex"`
 
 	pdscList map[string]bool
+	force    bool
 }
 
 type PdscTag struct {
@@ -39,12 +40,42 @@ func NewPidx() *PidxXML {
 }
 
 func (p *PidxXML) addPdsc(pdsc PdscTag) error {
-	if p.pdscList[pdsc.getURL()] {
+	pdscURL := pdsc.getURL()
+	if p.pdscList[pdscURL] {
 		message := fmt.Sprintf("Package %s/%s/%s already exists!", pdsc.Vendor, pdsc.Name, pdsc.Version)
 		return errors.New(message)
 	}
+
+	if p.force {
+		// The pdsc info in the tag should be ignored
+		// and the actual pdsc is retrieved to get info cross-checked
+
+		incomingPdscXML := new(PdscXML)
+		if err := ReadXML(pdscURL, &incomingPdscXML); err != nil {
+			// If it can't get the pdsc file, consider the pdsc tag to be valid
+			p.Pindex.Pdscs = append(p.Pindex.Pdscs, pdsc)
+			p.pdscList[pdscURL] = true
+
+			return err
+		}
+
+		// Validate tag against the actual pdsc file
+		if err := incomingPdscXML.MatchTag(pdsc); err != nil {
+			// Prioritize information from pdsc file rather than tag
+			correctPdscTag := incomingPdscXML.Tag()
+			p.Pindex.Pdscs = append(p.Pindex.Pdscs, correctPdscTag)
+
+			// Mark both wrong and correct pdsc in pdscList
+			// to avoid duplication
+			p.pdscList[pdscURL] = true
+			p.pdscList[correctPdscTag.getURL()] = true
+
+			return err
+		}
+	}
+
 	p.Pindex.Pdscs = append(p.Pindex.Pdscs, pdsc)
-	p.pdscList[pdsc.getURL()] = true
+	p.pdscList[pdscURL] = true
 	return nil
 }
 
@@ -103,6 +134,10 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 	}
 
 	return nil
+}
+
+func (p *PidxXML) SetForce(force bool) {
+	p.force = force
 }
 
 func (p *PdscTag) getURL() string {
