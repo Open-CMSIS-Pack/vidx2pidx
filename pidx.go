@@ -107,11 +107,9 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 	Logger.Info("Updating list of packages")
 
 	var wg sync.WaitGroup
-	var err error
-	var errs []error
 
 	// Process package index first
-	errs = make([]error, vidx.PidxLength())
+	errs := make([]error, vidx.PidxLength()+vidx.PdscLength())
 	for i, vendorPidx := range vidx.ListPidx() {
 		wg.Add(1)
 		go updatePdscListTask(i, vendorPidx, p, &wg, &errs[i])
@@ -119,17 +117,13 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 
 	wg.Wait()
 
-	if err = AnyErr(errs); err != nil {
-		return err
-	}
-
 	// Now process package descriptors (vendors without pidx files)
-	errs = make([]error, vidx.PdscLength())
+	offset := vidx.PidxLength()
 	for i, pdsc := range vidx.ListPdsc() {
-		errs[i] = p.addPdsc(pdsc)
+		errs[i+offset] = p.addPdsc(pdsc)
 	}
 
-	if err = AnyErr(errs); err != nil {
+	if err := AnyErr(errs); err != nil {
 		return err
 	}
 
