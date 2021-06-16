@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
 	"reflect"
 	"testing"
 	"time"
@@ -109,6 +110,31 @@ func TestReadURL(t *testing.T) {
 		AssertEqual(t, err.Error(), "unexpected EOF")
 	})
 
+	t.Run("test fail to write to cache", func(t *testing.T) {
+
+		goodResponse := []byte("all good")
+		goodServer := httptest.NewServer(
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprintln(w, goodResponse)
+				},
+			),
+		)
+
+		// Enable cache temporarily
+		CacheDir = "test-fail-to-write-to-cache"
+		response, err := ReadURL(goodServer.URL + "/test")
+		CacheDir = ""
+
+		if err == nil && len(response) > 0 {
+			t.Error("ReadURL should return error when not able to write to cache")
+		}
+
+		if ! os.IsNotExist(err) {
+			t.Errorf("Error should be related to no existing directory, instead got %s", err)
+		}
+	})
+
 	t.Run("test all good", func(t *testing.T) {
 		goodResponse := []byte("all good")
 		goodServer := httptest.NewServer(
@@ -122,6 +148,34 @@ func TestReadURL(t *testing.T) {
 		if err != nil || len(response) == 0 {
 			t.Error("ReadURL should return OK")
 		}
+	})
+
+	t.Run("test all good with cache", func(t *testing.T) {
+		goodResponse := []byte("all good")
+		goodServer := httptest.NewServer(
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprintln(w, goodResponse)
+				},
+			),
+		)
+
+		CacheDir = "test-all-good-with-cache"
+		fileName := "test-all-good-with-cache"
+		ExitOnError(EnsureDir(CacheDir))
+
+		response, err := ReadURL(goodServer.URL + "/" + fileName)
+
+		if err != nil || len(response) == 0 {
+			t.Errorf("ReadURL should return OK, instead got: %s", err)
+		}
+
+		if _, err := os.Stat(path.Join(CacheDir, fileName)); os.IsNotExist(err) {
+			t.Errorf("Failed to write to cache: %s", err)
+		}
+
+		ExitOnError(os.RemoveAll(CacheDir))
+		CacheDir = ""
 	})
 }
 
@@ -288,4 +342,36 @@ func ExampleWriteXML() {
 	//  <dummy></dummy>
 	//  <contents>dummy content</contents>
 	// </dummyXML>
+}
+
+func TestEnsureDir(t *testing.T) {
+	t.Run("test if directory gets created", func(t *testing.T) {
+		dirName := "tmp/ensure-dir-test"
+		defer func() {
+			err := os.RemoveAll(dirName)
+			if err != nil {
+				t.Error("Directory created by EnsureDir should be removable")
+			}
+		}()
+
+		err := EnsureDir(dirName)
+		if err != nil {
+			t.Errorf("EnsureDir should not return error when creating directory: %s", err)
+		}
+	})
+
+	t.Run("test catch errors", func(t *testing.T) {
+		errMessage := "Fail to create dirs"
+		monkey.Patch(os.MkdirAll, func(path string, perm os.FileMode) error {
+			return errors.New(errMessage)
+		})
+
+		dirName := "tmp/ensure-dir-test"
+		err := EnsureDir(dirName)
+		if err == nil {
+			t.Errorf("EnsureDir should return error when not able to create dirs")
+		}
+		AssertEqual(t, err.Error(), errMessage)
+		monkey.Unpatch(os.MkdirAll)
+	})
 }

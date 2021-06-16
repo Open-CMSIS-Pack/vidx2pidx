@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -27,6 +28,8 @@ func ExitOnError(err error) {
 	}
 }
 
+var CacheDir string
+
 func ReadURL(url string) ([]byte, error) {
 	var empty []byte
 	resp, err := http.Get(url)
@@ -43,6 +46,14 @@ func ReadURL(url string) ([]byte, error) {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return empty, err
+	}
+
+	if len(CacheDir) > 0 {
+		fileName := path.Join(CacheDir, path.Base(url))
+		err = ioutil.WriteFile(fileName, body, 0666)
+		if err != nil {
+			return body, err
+		}
 	}
 
 	return body, nil
@@ -93,5 +104,13 @@ func WriteXML(path string, targetStruct interface{}) error {
 		return err
 	}
 
+	return nil
+}
+
+func EnsureDir(dirName string) error {
+	err := os.MkdirAll(dirName, 0755)
+	if err != nil && !os.IsExist(err) {
+		return err
+	}
 	return nil
 }
