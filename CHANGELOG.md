@@ -1,3 +1,7 @@
+# v0.0.2
+
+Testing release
+
 # v0.0.1
 
 First real release of vidx2pidx.
