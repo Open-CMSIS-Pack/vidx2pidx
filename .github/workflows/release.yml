@@ -17,12 +17,13 @@ jobs:
           go-version: 1.16
       - name: Generate release notes
         run: |
-          ./scripts/release_notes > RELEASE_NOTES
+          git fetch --unshallow
+          ./scripts/release_notes > /tmp/RELEASE_NOTES
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --release-notes=RELEASE_NOTES
+          args: release --release-notes=/tmp/RELEASE_NOTES
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Build assets
