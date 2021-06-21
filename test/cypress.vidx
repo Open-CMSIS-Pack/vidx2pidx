@@ -9,5 +9,6 @@
   </vindex>
   <pindex>
     <pdsc url="http://packs.download.atmel.com/" vendor="Atmel" name="SAM3A_DFP" version="1.0.50" />
+    <pdsc url="non-existing-path/" vendor="TheVendor" name="TePack" version="1.0.50" />
   </pindex>
 </index>

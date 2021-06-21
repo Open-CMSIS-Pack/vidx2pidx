@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 )
@@ -52,6 +53,50 @@ func TestCli(t *testing.T) {
 
 		AssertEqual(t, strings.TrimSpace(string(out)), expected)
 	})
+
+	t.Run("test continue despite errors", func(t *testing.T) {
+		outputFileName := "test-continue-despite-errors.xml"
+
+		currLogFile := Logger.file
+		currLevel := Logger.level
+		output := bytes.NewBufferString("")
+		Logger.SetFile(output)
+		Logger.SetLevel(ERROR)
+
+		cmd := NewCli()
+		cmd.SetArgs([]string{"test/cypress.vidx", "-f", "-o", outputFileName})
+		ExitOnError(cmd.Execute())
+
+		out, err := ioutil.ReadAll(output)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		outStr := strings.TrimSpace(string(out))
+		if len(outStr) == 0 || !strings.HasPrefix(outStr, "E: ") {
+			t.Errorf("There should be an error log, instead got: '%s'", outStr)
+		}
+
+		out, err = ioutil.ReadFile(outputFileName)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		expected := `<index>
+ <timestamp></timestamp>
+ <pindex>
+  <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC6_DFP/" name="PSoC6_DFP" version="1.2.0" timestamp=""></pdsc>
+  <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC4_DFP/" name="PSoC4_DFP" version="1.1.0" timestamp=""></pdsc>
+  <pdsc vendor="Atmel" url="http://packs.download.atmel.com/" name="SAM3A_DFP" version="1.0.50" timestamp=""></pdsc>
+  <pdsc vendor="TheVendor" url="non-existing-path/" name="TePack" version="1.0.50" timestamp=""></pdsc>
+ </pindex>
+</index>`
+		AssertEqual(t, string(out), expected)
+
+		Logger.SetFile(currLogFile)
+		Logger.SetLevel(currLevel)
+		ExitOnError(os.RemoveAll(outputFileName))
+	})
 }
 
 func ExampleNewCli() {
@@ -65,6 +110,7 @@ func ExampleNewCli() {
 	//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC6_DFP/" name="PSoC6_DFP" version="1.2.0" timestamp=""></pdsc>
 	//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC4_DFP/" name="PSoC4_DFP" version="1.1.0" timestamp=""></pdsc>
 	//   <pdsc vendor="Atmel" url="http://packs.download.atmel.com/" name="SAM3A_DFP" version="1.0.50" timestamp=""></pdsc>
+	//   <pdsc vendor="TheVendor" url="non-existing-path/" name="TePack" version="1.0.50" timestamp=""></pdsc>
 	//  </pindex>
 	// </index>
 }

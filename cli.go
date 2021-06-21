@@ -8,9 +8,10 @@ import (
 )
 
 var flags struct {
-	outputFileName    string
-	validatePidxFiles bool
-	version           bool
+	outputFileName string
+	force          bool
+	cacheDir       string
+	version        bool
 }
 
 func printVersionAndLicense(file io.Writer) {
@@ -38,15 +39,26 @@ func NewCli() *cobra.Command {
 
 			Vidx := NewVidx()
 			Pidx := NewPidx()
+			Pidx.SetForce(flags.force)
 
+			CacheDir = flags.cacheDir
+
+			ExitOnError(EnsureDir(CacheDir))
 			ExitOnError(Vidx.Init(vidxFileName))
-			ExitOnError(Pidx.Update(Vidx))
+
+			err := Pidx.Update(Vidx)
+			if err != nil {
+				Logger.Error(err.Error())
+			}
+
 			ExitOnError(WriteXML(flags.outputFileName, Pidx))
 		},
 	}
 
 	cmd.Flags().StringVarP(&flags.outputFileName, "output", "o", "index.pidx", "Save pidx to this file")
-	cmd.Flags().BoolVarP(&flags.version, "version", "V", false, "Output the version number of vidx2pidx and exit.")
+	cmd.Flags().BoolVarP(&flags.version, "version", "V", false, "Output the version number of vidx2pidx and exit")
+	cmd.Flags().BoolVarP(&flags.force, "force", "f", false, "Force the update, ignoring timestamps and digging package descriptor files")
+	cmd.Flags().StringVarP(&flags.cacheDir, "cachedir", "c", ".idxcache", "Directory where to download and store pdsc files when using -f/--force flag")
 
 	return cmd
 }

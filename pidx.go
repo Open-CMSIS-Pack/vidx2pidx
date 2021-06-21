@@ -16,14 +16,15 @@ type PidxXML struct {
 	Timestamp string   `xml:"timestamp"`
 
 	Pindex struct {
-		XMLName xml.Name `xml:"pindex"`
-		Pdscs   []Pdsc   `xml:"pdsc"`
+		XMLName xml.Name  `xml:"pindex"`
+		Pdscs   []PdscTag `xml:"pdsc"`
 	} `xml:"pindex"`
 
 	pdscList map[string]bool
+	force    bool
 }
 
-type Pdsc struct {
+type PdscTag struct {
 	XMLName   xml.Name `xml:"pdsc"`
 	Vendor    string   `xml:"vendor,attr"`
 	URL       string   `xml:"url,attr"`
@@ -38,17 +39,47 @@ func NewPidx() *PidxXML {
 	return p
 }
 
-func (p *PidxXML) addPdsc(pdsc Pdsc) error {
-	if p.pdscList[pdsc.getURL()] {
+func (p *PidxXML) addPdsc(pdsc PdscTag) error {
+	pdscURL := pdsc.getURL()
+	if p.pdscList[pdscURL] {
 		message := fmt.Sprintf("Package %s/%s/%s already exists!", pdsc.Vendor, pdsc.Name, pdsc.Version)
 		return errors.New(message)
 	}
+
+	if p.force {
+		// The pdsc info in the tag should be ignored
+		// and the actual pdsc is retrieved to get info cross-checked
+
+		incomingPdscXML := new(PdscXML)
+		if err := ReadXML(pdscURL, &incomingPdscXML); err != nil {
+			// If it can't get the pdsc file, consider the pdsc tag to be valid
+			p.Pindex.Pdscs = append(p.Pindex.Pdscs, pdsc)
+			p.pdscList[pdscURL] = true
+
+			return err
+		}
+
+		// Validate tag against the actual pdsc file
+		if err := incomingPdscXML.MatchTag(pdsc); err != nil {
+			// Prioritize information from pdsc file rather than tag
+			correctPdscTag := incomingPdscXML.Tag()
+			p.Pindex.Pdscs = append(p.Pindex.Pdscs, correctPdscTag)
+
+			// Mark both wrong and correct pdsc in pdscList
+			// to avoid duplication
+			p.pdscList[pdscURL] = true
+			p.pdscList[correctPdscTag.getURL()] = true
+
+			return err
+		}
+	}
+
 	p.Pindex.Pdscs = append(p.Pindex.Pdscs, pdsc)
-	p.pdscList[pdsc.getURL()] = true
+	p.pdscList[pdscURL] = true
 	return nil
 }
 
-func (p *PidxXML) ListPdsc() []Pdsc {
+func (p *PidxXML) ListPdsc() []PdscTag {
 	Logger.Debug("Listing available packages")
 	return p.Pindex.Pdscs
 }
@@ -76,11 +107,9 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 	Logger.Info("Updating list of packages")
 
 	var wg sync.WaitGroup
-	var err error
-	var errs []error
 
 	// Process package index first
-	errs = make([]error, vidx.PidxLength())
+	errs := make([]error, vidx.PidxLength()+vidx.PdscLength())
 	for i, vendorPidx := range vidx.ListPidx() {
 		wg.Add(1)
 		go updatePdscListTask(i, vendorPidx, p, &wg, &errs[i])
@@ -88,23 +117,23 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 
 	wg.Wait()
 
-	if err = AnyErr(errs); err != nil {
-		return err
-	}
-
 	// Now process package descriptors (vendors without pidx files)
-	errs = make([]error, vidx.PdscLength())
+	offset := vidx.PidxLength()
 	for i, pdsc := range vidx.ListPdsc() {
-		errs[i] = p.addPdsc(pdsc)
+		errs[i+offset] = p.addPdsc(pdsc)
 	}
 
-	if err = AnyErr(errs); err != nil {
+	if err := AnyErr(errs); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (p *Pdsc) getURL() string {
+func (p *PidxXML) SetForce(force bool) {
+	p.force = force
+}
+
+func (p *PdscTag) getURL() string {
 	return p.URL + p.Vendor + "." + p.Name + ".pdsc"
 }
