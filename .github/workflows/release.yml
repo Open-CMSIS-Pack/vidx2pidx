@@ -15,10 +15,9 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
-      - name: Generate changelog
+      - name: Generate release notes
         run: |
-          previous_tag="$(git describe --tags HEAD^ --abbrev=0)"
-          sed "/^# ${previous_tag}/q" CHANGELOG.md | head -n -1 > RELEASE_NOTES
+          ./scripts/release_notes > RELEASE_NOTES
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
