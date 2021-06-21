@@ -1,6 +1,6 @@
 package main
 
-const Version = "0.0.1"
+var Version string
 
 const License = `Copyright 2021 Linaro
 

@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - name: Generate changelog
+        run: |
+          previous_tag="$(git describe --tags HEAD^ --abbrev=0)"
+          sed "/^# ${previous_tag}/q" CHANGELOG.md | head -n -1 > RELEASE_NOTES
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: release --release-notes=RELEASE_NOTES
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Build assets
+        run: |
+          mkdir -p build/{linux,windows,darwin}
+          make OS=linux  ARCH=amd64 build/vidx2pidx     && mv build/vidx2pidx     build/linux/
+          make OS=darwin ARCH=amd64 build/vidx2pidx     && mv build/vidx2pidx     build/darwin/
+          make OS=window ARCH=amd64 build/vidx2pidx.exe && mv build/vidx2pidx.exe build/windows/
+      - name: Upload assets
+        uses: actions/upload-artifact@v2
+        with:
+          name: vidx2pidx
+          path: build/*

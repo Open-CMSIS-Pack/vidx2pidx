@@ -30,7 +30,7 @@ all:
 
 $(PROG): $(SOURCES)
 	@echo Building project
-	GOOS=$(OS) GOARCH=$(ARCH) go build -o $(PROG)
+	GOOS=$(OS) GOARCH=$(ARCH) go build -ldflags "-X main.Version=`git describe`" -o $(PROG)
 
 run: $(PROG)
 	@./$(PROG) $(ARGS) || true
@@ -45,7 +45,7 @@ format-check:
 	$(GOFORMATTER) -d . | tee format-check.out
 	test ! -s format-check.out
 
-.PHONY: test
+.PHONY: test release
 test:
 	TESTING=1 go test $(ARGS)
 
@@ -60,5 +60,8 @@ coverage-check:
 	tail -n +2 cover.out | grep -v -e " 1$$" | grep -v main.go | tee coverage-check.out
 	test ! -s coverage-check.out
 
+release: # test-all build/vidx2pidx build/vidx2pidx.exe
+	@./scripts/release
+	
 clean:
 	rm -rf build/*
