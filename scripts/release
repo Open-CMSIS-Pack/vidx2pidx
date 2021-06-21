@@ -59,7 +59,7 @@ fi
 # Commit changes to CHANGELOG, bump up the version and push
 # tags so that github action can take care of the second
 # part of the release, see .github/workflows/release.yml
-echo git commit --message "New release: $next_release_version" CHANGELOG.md || true
-echo git tag -s -m "Vidx2pidx release $next_release_version" "$next_release_version"
-echo git push
-echo git push --tags
+git commit --message "New release: $next_release_version" CHANGELOG.md || true
+git tag -s -m "Vidx2pidx release $next_release_version" "$next_release_version"
+git push
+git push --tags
