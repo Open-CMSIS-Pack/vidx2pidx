@@ -23,17 +23,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --release-notes=/tmp/RELEASE_NOTES
+          args: release --rm-dist --release-notes=/tmp/RELEASE_NOTES
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: Build assets
-        run: |
-          mkdir -p build/{linux,windows,darwin}
-          make OS=linux  ARCH=amd64 build/vidx2pidx     && mv build/vidx2pidx     build/linux/
-          make OS=darwin ARCH=amd64 build/vidx2pidx     && mv build/vidx2pidx     build/darwin/
-          make OS=window ARCH=amd64 build/vidx2pidx.exe && mv build/vidx2pidx.exe build/windows/
-      - name: Upload assets
-        uses: actions/upload-artifact@v2
-        with:
-          name: vidx2pidx
-          path: build/*
