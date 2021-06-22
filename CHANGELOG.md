@@ -1,3 +1,12 @@
+# v0.0.3
+
+This v0.0.3 release fixes the releasing process by
+providing downloadable artifacts for Linux, MacOS and
+Windows platforms.
+
+The release packages also come with the LICENSE.txt,
+README.md and CHANGELOG.md files embedded.
+
 # v0.0.2
 
 Testing release
