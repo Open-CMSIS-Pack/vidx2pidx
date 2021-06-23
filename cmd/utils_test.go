@@ -223,7 +223,7 @@ func TestReadXML(t *testing.T) {
 			return empty, errors.New(errString)
 		})
 
-		err := ReadXML("test/dummy.xml", &dummyXML)
+		err := ReadXML("../test/dummy.xml", &dummyXML)
 		if err == nil {
 			t.Error("ReadXML should return error when local XML file fails to read")
 		}
@@ -238,7 +238,7 @@ func TestReadXML(t *testing.T) {
 			return []byte("<unclosed-tag"), nil
 		})
 
-		err := ReadXML("test/dummy.xml", &dummyXML)
+		err := ReadXML("../test/dummy.xml", &dummyXML)
 		if err == nil {
 			t.Error("ReadXML should return error when local XML file fails to read")
 		}
@@ -253,7 +253,7 @@ func TestReadXML(t *testing.T) {
 			return []byte("<dummy><contents>Dummy content</contents></dummy>"), nil
 		})
 
-		err := ReadXML("test/dummy.xml", &dummyXML)
+		err := ReadXML("../test/dummy.xml", &dummyXML)
 		if err != nil {
 			t.Error("ReadXML should not return error on valid XML files:")
 		}
@@ -295,7 +295,7 @@ func TestWriteXML(t *testing.T) {
 		})
 
 		xml := new(dummyXML)
-		err := WriteXML("test/dummy-out.xml", xml)
+		err := WriteXML("../test/dummy-out.xml", xml)
 		if err == nil {
 			t.Error("WriteXML should return error when it's not able to write to file")
 		}
@@ -308,7 +308,7 @@ func TestWriteXML(t *testing.T) {
 	// Test to stdout is covered in ExampleWriteXMLToStdout
 
 	t.Run("test write to file", func(t *testing.T) {
-		fileName := "test/dummy-out.xml"
+		fileName := "../test/dummy-out.xml"
 
 		xml := new(dummyXML)
 		xml.Contents = "dummy content"

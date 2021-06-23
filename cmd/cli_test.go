@@ -64,7 +64,7 @@ func TestCli(t *testing.T) {
 		Logger.SetLevel(ERROR)
 
 		cmd := NewCli()
-		cmd.SetArgs([]string{"test/cypress.vidx", "-f", "-o", outputFileName})
+		cmd.SetArgs([]string{"../test/cypress.vidx", "-f", "-o", outputFileName})
 		ExitOnError(cmd.Execute())
 
 		out, err := ioutil.ReadAll(output)
@@ -101,7 +101,7 @@ func TestCli(t *testing.T) {
 
 func ExampleNewCli() {
 	cmd := NewCli()
-	cmd.SetArgs([]string{"test/cypress.vidx", "-o", "-"})
+	cmd.SetArgs([]string{"../test/cypress.vidx", "-o", "-"})
 	ExitOnError(cmd.Execute())
 	// Output:
 	// <index>

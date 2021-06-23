@@ -15,7 +15,7 @@ func TestVidx(t *testing.T) {
 		})
 
 		vidx := NewVidx()
-		err := vidx.Init("test/dummy.xml")
+		err := vidx.Init("../test/dummy.xml")
 		if err == nil {
 			t.Error("VidxXML.Init() should fail if XML cannot be read")
 		}

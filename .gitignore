@@ -2,3 +2,5 @@ build/
 testing.log
 *.out
 index.pidx
+.idxcache
+test/cache
