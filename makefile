@@ -20,13 +20,27 @@ all:
 	@echo $$ make $(PROG)
 	@echo $$ make run
 	@echo $$ make clean
+	@echo $$ make config
+	@echo $$ make release
 	@echo
 	@echo Build for different OS's and ARCH's by defining these variables. Ex:
 	@echo $$ make OS=windows ARCH=amd64 build/$(BIN_NAME).exe  \# build for windows 64bits
-	@echo $$ make OS=darwin  ARCH=amd64 build/$(BIN_NAME)       \# build for MacOS 64bits
+	@echo $$ make OS=darwin  ARCH=amd64 build/$(BIN_NAME)      \# build for MacOS 64bits
+	@echo
+	@echo Run tests
+	@echo $$ make test ARGS="<test args>"
+	@echo
+	@echo Release a new version of $(BIN_NAME)
+	@echo $$ make release
 	@echo
 	@echo Clean everything
 	@echo $$ make clean
+	@echo
+	@echo Configure local environment
+	@echo $$ make config
+	@echo
+	@echo Generate a report on code-coverage
+	@echo $$ make coverage-report
 
 $(PROG): $(SOURCES)
 	@echo Building project
@@ -36,7 +50,7 @@ run: $(PROG)
 	@./$(PROG) $(ARGS) || true
 
 lint:
-	$(GOLINTER) run
+	$(GOLINTER) run --config=.golangci.yml
 
 format:
 	$(GOFORMATTER) -s -w .
@@ -45,7 +59,7 @@ format-check:
 	$(GOFORMATTER) -d . | tee format-check.out
 	test ! -s format-check.out
 
-.PHONY: test release
+.PHONY: test release config
 test:
 	TESTING=1 go test $(ARGS)
 
@@ -60,8 +74,15 @@ coverage-check:
 	tail -n +2 cover.out | grep -v -e " 1$$" | grep -v main.go | tee coverage-check.out
 	test ! -s coverage-check.out
 
-release: # test-all build/vidx2pidx build/vidx2pidx.exe
+release: test-all build/vidx2pidx
 	@./scripts/release
-	
+
+config:
+	@echo "Configuring local environment"
+	@go version 2>/dev/null || echo "Need Golang: https://golang.org/doc/install"
+	@golangci-lint version 2>/dev/null || echo "Need GolangCi-Lint: https://golangci-lint.run/usage/install/#local-installation"
+
+	# Install pre-commit hooks
+	cp scripts/pre-commit .git/hooks/pre-commit
 clean:
 	rm -rf build/*

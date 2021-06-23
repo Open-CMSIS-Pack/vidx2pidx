@@ -27,13 +27,3 @@ Options:
   -c, --cachedir    specify directory where downloaded pidx and pdsc files are stored (default ./.idxcache)
   -f, --force       force update – ignore timestamp information
   ```
-
-## Developing
-
-Make sure to have Go [installed](https://golang.org/doc/install) in your environment.
-
-```bash
-$ git clone https://github.com/open-cmsis-pack/vidx2pidx
-$ cd vidx2pidx
-$ make
-```
