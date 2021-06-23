@@ -16,7 +16,7 @@ Just head to the release page and download the binary for your system.
 
 ## Usage
 ```bash
-$ vidx2pidx vendor.vidx
+$ vidx2pidx &lt;index&gt;.vidx
 
 Options:
 
