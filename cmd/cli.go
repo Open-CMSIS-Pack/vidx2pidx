@@ -21,7 +21,7 @@ func printVersionAndLicense(file io.Writer) {
 
 func NewCli() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vidx2pidx vendors.vidx",
+		Use:   "vidx2pidx <index>.vidx",
 		Short: "This utility converts a vendor index file into a vendor independent package index file.",
 		Run: func(cmd *cobra.Command, args []string) {
 			if flags.version {
