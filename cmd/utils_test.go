@@ -326,6 +326,10 @@ func TestWriteXML(t *testing.T) {
  <dummy></dummy>
  <contents>dummy content</contents>
 </dummyXML>`))
+		err = os.Remove(fileName)
+		if err != nil {
+			t.Fatalf("Can't remove file %s: %s", fileName, err)
+		}
 	})
 }
 
