@@ -31,6 +31,8 @@ type PdscTag struct {
 	Name      string   `xml:"name,attr"`
 	Version   string   `xml:"version,attr"`
 	Timestamp string   `xml:"timestamp,attr"`
+
+	err error
 }
 
 func NewPidx() *PidxXML {
@@ -40,10 +42,13 @@ func NewPidx() *PidxXML {
 }
 
 func (p *PidxXML) addPdsc(pdsc PdscTag) error {
+	var err error
 	pdscURL := pdsc.getURL()
 	if p.pdscList[pdscURL] {
 		message := fmt.Sprintf("Package %s/%s/%s already exists!", pdsc.Vendor, pdsc.Name, pdsc.Version)
-		return errors.New(message)
+		err = errors.New(message)
+		pdsc.err = err
+		return err
 	}
 
 	if p.force {
@@ -55,7 +60,7 @@ func (p *PidxXML) addPdsc(pdsc PdscTag) error {
 			// If it can't get the pdsc file, consider the pdsc tag to be valid
 			p.Pindex.Pdscs = append(p.Pindex.Pdscs, pdsc)
 			p.pdscList[pdscURL] = true
-
+			pdsc.err = err
 			return err
 		}
 
@@ -69,6 +74,7 @@ func (p *PidxXML) addPdsc(pdsc PdscTag) error {
 			// to avoid duplication
 			p.pdscList[pdscURL] = true
 			p.pdscList[correctPdscTag.getURL()] = true
+			pdsc.err = err
 
 			return err
 		}
@@ -84,21 +90,25 @@ func (p *PidxXML) ListPdsc() []PdscTag {
 	return p.Pindex.Pdscs
 }
 
-func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.WaitGroup, err *error) {
+func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.WaitGroup, errs [][]error) {
 	defer wg.Done()
 
+	errs[id] = make([]error, 1)
 	url := vendorPidx.URL + vendorPidx.Vendor + ".pidx"
 	Logger.Info("[%d] Fetching packages list from %s", id, url)
 
 	incomingPidx := new(PidxXML)
-	if *err = ReadXML(url, &incomingPidx); *err != nil {
+	if err := ReadXML(url, &incomingPidx); err != nil {
+		errs[id][0] = err
 		return
 	}
 
 	Logger.Info("Adding pdscs")
-	for _, pdsc := range incomingPidx.ListPdsc() {
-		if *err = pidx.addPdsc(pdsc); *err != nil {
-			return
+	pdscs := incomingPidx.ListPdsc()
+	errs[id] = make([]error, len(pdscs))
+	for i, pdsc := range pdscs {
+		if err := pidx.addPdsc(pdsc); err != nil {
+			errs[id][i] = err
 		}
 	}
 }
@@ -109,10 +119,10 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 	var wg sync.WaitGroup
 
 	// Process package index first
-	errs := make([]error, vidx.PidxLength()+vidx.PdscLength())
+	errs := make([][]error, vidx.PidxLength()+vidx.PdscLength())
 	for i, vendorPidx := range vidx.ListPidx() {
 		wg.Add(1)
-		go updatePdscListTask(i, vendorPidx, p, &wg, &errs[i])
+		go updatePdscListTask(i, vendorPidx, p, &wg, errs)
 	}
 
 	wg.Wait()
@@ -120,11 +130,15 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 	// Now process package descriptors (vendors without pidx files)
 	offset := vidx.PidxLength()
 	for i, pdsc := range vidx.ListPdsc() {
-		errs[i+offset] = p.addPdsc(pdsc)
+
+		errs[i+offset] = make([]error, 1)
+		errs[i+offset][0] = p.addPdsc(pdsc)
 	}
 
-	if err := AnyErr(errs); err != nil {
-		return err
+	for _, e := range errs {
+		if err := AnyErr(e); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -64,7 +64,7 @@ func TestCli(t *testing.T) {
 		Logger.SetLevel(ERROR)
 
 		cmd := NewCli()
-		cmd.SetArgs([]string{"../test/cypress.vidx", "-f", "-o", outputFileName})
+		cmd.SetArgs([]string{"../test/testing_vendor_index.vidx", "-f", "-o", outputFileName})
 		ExitOnError(cmd.Execute())
 
 		out, err := ioutil.ReadAll(output)
@@ -85,10 +85,10 @@ func TestCli(t *testing.T) {
 		expected := `<index>
  <timestamp></timestamp>
  <pindex>
-  <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC6_DFP/" name="PSoC6_DFP" version="1.2.0" timestamp=""></pdsc>
-  <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC4_DFP/" name="PSoC4_DFP" version="1.1.0" timestamp=""></pdsc>
-  <pdsc vendor="Atmel" url="http://packs.download.atmel.com/" name="SAM3A_DFP" version="1.0.50" timestamp=""></pdsc>
-  <pdsc vendor="TheVendor" url="non-existing-path/" name="TePack" version="1.0.50" timestamp=""></pdsc>
+  <pdsc vendor="TheVendor" url="test/" name="ThePack2" version="1.1.0" timestamp=""></pdsc>
+  <pdsc vendor="TheVendor" url="test/" name="ThePack1" version="1.2.3" timestamp=""></pdsc>
+  <pdsc vendor="TheOtherVendor" url="test/" name="TheOtherPack" version="1.0.50" timestamp=""></pdsc>
+  <pdsc vendor="TheVendor" url="non-existing-path/" name="ThePack" version="1.0.1" timestamp=""></pdsc>
  </pindex>
 </index>`
 		AssertEqual(t, string(out), expected)
@@ -101,16 +101,16 @@ func TestCli(t *testing.T) {
 
 func ExampleNewCli() {
 	cmd := NewCli()
-	cmd.SetArgs([]string{"../test/cypress.vidx", "-o", "-"})
+	cmd.SetArgs([]string{"../test/testing_vendor_index.vidx", "-o", "-"})
 	ExitOnError(cmd.Execute())
 	// Output:
 	// <index>
 	//  <timestamp></timestamp>
 	//  <pindex>
-	//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC6_DFP/" name="PSoC6_DFP" version="1.2.0" timestamp=""></pdsc>
-	//   <pdsc vendor="Cypress" url="https://github.com/cypresssemiconductorco/cmsis-packs/raw/master/PSoC4_DFP/" name="PSoC4_DFP" version="1.1.0" timestamp=""></pdsc>
-	//   <pdsc vendor="Atmel" url="http://packs.download.atmel.com/" name="SAM3A_DFP" version="1.0.50" timestamp=""></pdsc>
-	//   <pdsc vendor="TheVendor" url="non-existing-path/" name="TePack" version="1.0.50" timestamp=""></pdsc>
+	//   <pdsc vendor="TheVendor" url="../test/" name="ThePack2" version="1.1.0" timestamp=""></pdsc>
+	//   <pdsc vendor="TheVendor" url="../test/" name="ThePack1" version="1.2.3" timestamp=""></pdsc>
+	//   <pdsc vendor="TheOtherVendor" url="../test/" name="TheOtherPack" version="1.0.0" timestamp=""></pdsc>
+	//   <pdsc vendor="TheVendor" url="non-existing-path/" name="ThePack" version="1.0.1" timestamp=""></pdsc>
 	//  </pindex>
 	// </index>
 }
