@@ -32,7 +32,7 @@ var CacheDir string
 
 func ReadURL(url string) ([]byte, error) {
 	var empty []byte
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) // #nosec
 	if err != nil {
 		return empty, err
 	}
@@ -50,7 +50,7 @@ func ReadURL(url string) ([]byte, error) {
 
 	if len(CacheDir) > 0 {
 		fileName := path.Join(CacheDir, path.Base(url))
-		err = ioutil.WriteFile(fileName, body, 0666)
+		err = ioutil.WriteFile(fileName, body, 0600)
 		if err != nil {
 			return body, err
 		}
@@ -99,7 +99,7 @@ func WriteXML(path string, targetStruct interface{}) error {
 		return nil
 	}
 
-	err = ioutil.WriteFile(path, output, 0666)
+	err = ioutil.WriteFile(path, output, 0600)
 	if err != nil {
 		return err
 	}
