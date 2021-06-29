@@ -15,6 +15,10 @@ Just head to the release page and download the binary for your system.
 
 
 ## Usage
+
+![vidx2pidx_usage](https://user-images.githubusercontent.com/2254825/123787047-bfe17680-d8b0-11eb-8214-eb907bf5f9a4.gif)
+
+
 ```bash
 $ vidx2pidx <index>.vidx
 
