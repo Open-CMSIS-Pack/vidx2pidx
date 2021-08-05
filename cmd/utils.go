@@ -14,6 +14,8 @@ import (
 	"strings"
 )
 
+// AnyErr receives a slice of errors and return the first that's not nil.
+// Returns nil if all errors in the slice are nil.
 func AnyErr(errs []error) error {
 	for _, err := range errs {
 		if err != nil {
@@ -24,6 +26,7 @@ func AnyErr(errs []error) error {
 	return nil
 }
 
+// ExitOnError exits the program with -1 in case the error parameter is not nil.
 func ExitOnError(err error) {
 	if err != nil {
 		Logger.Error(err.Error())
@@ -31,8 +34,11 @@ func ExitOnError(err error) {
 	}
 }
 
+// CacheDir contains the directory path where cached files will live.
 var CacheDir string
 
+// ReadURL opens an URL and returns its contents.
+// Accessed URLs will be saved in CacheDir, if that is filled.
 func ReadURL(url string) ([]byte, error) {
 	var empty []byte
 	resp, err := http.Get(url) // #nosec
@@ -62,6 +68,7 @@ func ReadURL(url string) ([]byte, error) {
 	return body, nil
 }
 
+// ReadXML unmarshals the XML file specified in "path" into "targetStruct".
 func ReadXML(path string, targetStruct interface{}) error {
 	var contents []byte
 	var err error
@@ -91,6 +98,7 @@ func ReadXML(path string, targetStruct interface{}) error {
 	return nil
 }
 
+// WriteXML marshals the XML info from "targetStruct" and save it to "path".
 func WriteXML(path string, targetStruct interface{}) error {
 	output, err := xml.MarshalIndent(targetStruct, "", " ")
 	if err != nil {
@@ -110,6 +118,7 @@ func WriteXML(path string, targetStruct interface{}) error {
 	return nil
 }
 
+// EnsureDir makes sure directory specified by dirName exists and it's writable.
 func EnsureDir(dirName string) error {
 	err := os.MkdirAll(dirName, 0755)
 	if err != nil && !os.IsExist(err) {

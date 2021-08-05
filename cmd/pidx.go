@@ -10,10 +10,8 @@ import (
 	"sync"
 )
 
-//
-//  This file contains all available packages from
-//  all vendors.
-//
+// PidxXML maps the PIDX file format.
+// Ref: https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/Utilities/PackIndex.xsd
 type PidxXML struct {
 	XMLName   xml.Name `xml:"index"`
 	Timestamp string   `xml:"timestamp"`
@@ -27,6 +25,7 @@ type PidxXML struct {
 	force    bool
 }
 
+// PdscTag maps a <pdsc> tag that goes in PIDX files.
 type PdscTag struct {
 	XMLName   xml.Name `xml:"pdsc"`
 	Vendor    string   `xml:"vendor,attr"`
@@ -38,12 +37,18 @@ type PdscTag struct {
 	err error
 }
 
+// NewPidx creates a new instance of the PidXML struct.
+// Additionally, it allocates memory to keep a map of existing PDSC tags.
 func NewPidx() *PidxXML {
 	p := new(PidxXML)
 	p.pdscList = make(map[string]bool)
 	return p
 }
 
+// addPdsc appends a PdscTag to the PidxXML struct.
+// It makes sure that no duplicate PDSC tags are added.
+// If PidxXML.force is true, it means that the PDSC tag info will be completely
+// replaced by the info present in the actual PDSC file.
 func (p *PidxXML) addPdsc(pdsc PdscTag) error {
 	var err error
 	pdscURL := pdsc.getURL()
@@ -88,11 +93,14 @@ func (p *PidxXML) addPdsc(pdsc PdscTag) error {
 	return nil
 }
 
+// ListPdsc returns a slice of PdscTag type.
 func (p *PidxXML) ListPdsc() []PdscTag {
 	Logger.Debug("Listing available packages")
 	return p.Pindex.Pdscs
 }
 
+// updatePdscListTask is a thread that actually generates a flat list of all
+// PDSC tags collected from the Pindex section of the VIDX file.
 func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.WaitGroup, errs [][]error) {
 	defer wg.Done()
 
@@ -116,6 +124,7 @@ func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.W
 	}
 }
 
+// Update generates a flattened PIDX file containing all PDSC tags collected from a given VIDX file.
 func (p *PidxXML) Update(vidx *VidxXML) error {
 	Logger.Info("Updating list of packages")
 
@@ -147,10 +156,12 @@ func (p *PidxXML) Update(vidx *VidxXML) error {
 	return nil
 }
 
+// SetForce sets the force flag for the PidxXML struct.
 func (p *PidxXML) SetForce(force bool) {
 	p.force = force
 }
 
+// getURL returns a string representing the PdscTag URL.
 func (p *PdscTag) getURL() string {
 	return p.URL + p.Vendor + "." + p.Name + ".pdsc"
 }

@@ -3,6 +3,7 @@
 
 package main
 
+// main is the main entrypoint of vidx2pidx
 func main() {
 	cmd := NewCli()
 	ExitOnError(cmd.Execute())

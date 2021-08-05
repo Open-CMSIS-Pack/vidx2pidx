@@ -9,6 +9,8 @@ import (
 	"fmt"
 )
 
+// PdscXML maps few tags of a PDSC file.
+// Ref: https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/Utilities/PACK.xsd
 type PdscXML struct {
 	XMLName xml.Name `xml:"package"`
 	Vendor  string   `xml:"vendor"`
@@ -21,12 +23,14 @@ type PdscXML struct {
 	} `xml:"releases"`
 }
 
+// ReleaseTag maps the <release> tag of a PDSC file.
 type ReleaseTag struct {
 	XMLName xml.Name `xml:"release"`
 	Version string   `xml:"version,attr"`
 	Date    string   `xml:"Date,attr"`
 }
 
+// MatchTag checks whether a PDSC file matches a <pdsc> tag.
 func (p *PdscXML) MatchTag(pdscTag PdscTag) error {
 	diff := ""
 
@@ -51,6 +55,8 @@ func (p *PdscXML) MatchTag(pdscTag PdscTag) error {
 	return nil
 }
 
+// LatestVersion returns a string containing version of the first tag within
+// the <releases> tag.
 func (p *PdscXML) LatestVersion() string {
 	releases := p.ReleasesTag.Releases
 	if len(releases) > 0 {
@@ -59,6 +65,7 @@ func (p *PdscXML) LatestVersion() string {
 	return ""
 }
 
+// Tag returns a PdscTag representation of a PDSC file.
 func (p *PdscXML) Tag() PdscTag {
 	return PdscTag{
 		Vendor:  p.Vendor,

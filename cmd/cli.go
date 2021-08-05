@@ -10,6 +10,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// flags gathers cmdline flags in a single set.
+// They are:
+// - outputFileName: file name to be created with vidx2pidx's output
+// - force: when enabled, will ignore the info from PDSC tag and read the PDSC file instead
+// - cacheDir: will be the home for downloaded files used to generate the index file
+// - version: when enabled, force vidx2pidx to print out version and license, then exit
 var flags struct {
 	outputFileName string
 	force          bool
@@ -17,11 +23,13 @@ var flags struct {
 	version        bool
 }
 
+// printVersionAndLicense prints out vidx2pidx current version and its license.
 func printVersionAndLicense(file io.Writer) {
 	fmt.Fprintf(file, "vidx2pidx version %v\n", Version)
 	fmt.Fprintf(file, "%v\n", License)
 }
 
+// NewCli creates a new instance of vidx2pidx cli.
 func NewCli() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vidx2pidx <index>.vidx",
