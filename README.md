@@ -15,9 +15,33 @@ Just head to the release page and download the binary for your system.
 
 
 ## Usage
-
-![vidx2pidx_usage](https://user-images.githubusercontent.com/2254825/123787047-bfe17680-d8b0-11eb-8214-eb907bf5f9a4.gif)
-
+- update your `vendor.pidx` file as [documented](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html#pidxFile)
+  ```
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <index schemaVersion="1.0.0" xs:noNamespaceSchemaLocation="PackIndex.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
+    <vendor>MyVendor</vendor>
+    <url>https://www.MyVendor.com/pack/</url>
+    <timestamp>2024-08-15T15:00:10</timestamp>
+    <pindex>
+      <pdsc url="https://www.MyVendor.com/pack/mypack/" vendor="MyVendor" name="MyPack" version="1.1.0"/>
+      ...
+    </pindex>
+  </index>
+  ```
+- create a vendor index file as [documented]( )
+  ```
+  <?xml version="1.0" encoding="UTF-8" ?>
+  <index schemaVersion="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="PackIndex.xsd">
+    <vendor>MyVendor</vendor>
+    <url>www.MyVendor.com/pack</url>
+    <timestamp>2024-08-T15:30:00</timestamp>
+    <vindex>
+      <pidx url="https://www.MyVendor.com/pack/" vendor="MyVendor" />
+      ...
+    </vindex>
+  </index>
+  ```
+- invoke `vidx2pidx vendor.vidx` 
 
 ```bash
 $ vidx2pidx <index>.vidx
@@ -31,3 +55,8 @@ Options:
   -c, --cachedir    specify directory where downloaded pidx and pdsc files are stored (default ./.idxcache)
   -f, --force       force update – ignore timestamp information
   ```
+
+Now the generated `index.pidx` can be used with cpackget to validate that all listed packs can be installed:
+- invoke `cpackget init ./index.pidx -R ./pack_root_test` to use the generated index.pidx in pack_root_test/.Web/index.pidx
+- invoke `cpackget --public -R /pack_root_test` to list all latest public pack versions
+
