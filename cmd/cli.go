@@ -57,7 +57,7 @@ func NewCli() *cobra.Command {
 			ExitOnError(EnsureDir(CacheDir))
 			ExitOnError(Vidx.Init(vidxFileName))
 
-			err := Pidx.Update(Vidx)
+			err := Pidx.Update(Vidx, vidxFileName, flags.outputFileName)
 			if err != nil {
 				Logger.Error(err.Error())
 			}

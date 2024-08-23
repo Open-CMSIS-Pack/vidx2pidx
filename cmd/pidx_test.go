@@ -4,10 +4,14 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 
 	"bou.ke/monkey"
@@ -190,7 +194,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		pidx := NewPidx()
-		err := pidx.Update(vidx)
+		err := pidx.Update(vidx, "", "")
 		if err == nil {
 			t.Error("PidxXML.Update() should fail on malformed-xml")
 		}
@@ -218,7 +222,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		pidx := NewPidx()
-		err := pidx.Update(vidx)
+		err := pidx.Update(vidx, "", "")
 		if err == nil {
 			t.Error("PidxXML.Update() should fail when adding an existing pdsc")
 		}
@@ -250,7 +254,7 @@ func TestUpdate(t *testing.T) {
 		})
 
 		pidx := NewPidx()
-		err := pidx.Update(vidx)
+		err := pidx.Update(vidx, "", "")
 		if err == nil {
 			t.Error("PidxXML.Update() should fail when adding an existing pdsc")
 		}
@@ -259,9 +263,17 @@ func TestUpdate(t *testing.T) {
 	})
 }
 
-func ExamplePidxXML_Update() {
-	Logger.SetLevel(DEBUG)
-	xml := `<index>
+func TestPidxXML_Update(t *testing.T) {
+	t.Run("test PidxXML_Update", func(t *testing.T) {
+		outputFileName := "test-PidxXML_Update.xml"
+
+		currLogFile := Logger.file
+		currLevel := Logger.level
+		output := bytes.NewBufferString("")
+		Logger.SetFile(output)
+		Logger.SetLevel(DEBUG)
+
+		xml := `<index>
                   <vendor>TheVendor</vendor>
                   <url>http://vendor.com/</url>
                   <timestamp></timestamp>
@@ -271,36 +283,62 @@ func ExamplePidxXML_Update() {
                   </pindex>
                 </index>`
 
-	pidxServer := httptest.NewServer(
-		http.HandlerFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprint(w, xml)
-			},
-		),
-	)
+		pidxServer := httptest.NewServer(
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprint(w, xml)
+				},
+			),
+		)
 
-	vidx := NewVidx()
-	vidx.Vindex.VendorPidxs = append(vidx.Vindex.VendorPidxs, VendorPidx{
-		Vendor: "TheVendor",
-		URL:    pidxServer.URL + "/",
-	})
-	vidx.Pindex.Pdscs = append(vidx.Pindex.Pdscs, PdscTag{
-		Vendor:  "TheOtherVendor",
-		URL:     "http://other-vendor.com/",
-		Name:    "ThePackage",
-		Version: "0.0.1",
-	})
+		vidx := NewVidx()
+		vidx.Vindex.VendorPidxs = append(vidx.Vindex.VendorPidxs, VendorPidx{
+			Vendor: "TheVendor",
+			URL:    pidxServer.URL + "/",
+		})
+		vidx.Pindex.Pdscs = append(vidx.Pindex.Pdscs, PdscTag{
+			Vendor:  "TheOtherVendor",
+			URL:     "http://other-vendor.com/",
+			Name:    "ThePackage",
+			Version: "0.0.1",
+		})
 
-	pidx := NewPidx()
-	ExitOnError(pidx.Update(vidx))
-	ExitOnError(WriteXML("", pidx))
-	// Output:
-	// <index>
-	//  <timestamp></timestamp>
-	//  <pindex>
-	//   <pdsc vendor="TheVendor" url="http://vendor.com/" name="ThePack" version="1.2.3" timestamp=""></pdsc>
-	//   <pdsc vendor="TheVendor" url="http://vendor.com/" name="TheOtherPack" version="1.1.0" timestamp=""></pdsc>
-	//   <pdsc vendor="TheOtherVendor" url="http://other-vendor.com/" name="ThePackage" version="0.0.1" timestamp=""></pdsc>
-	//  </pindex>
-	// </index>
+		pidx := NewPidx()
+		ExitOnError(pidx.Update(vidx, "vv", "uu"))
+		ExitOnError(WriteXML(outputFileName, pidx))
+
+		out, err := io.ReadAll(output)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		outStr := strings.TrimSpace(string(out))
+		if len(outStr) != 0 && strings.HasPrefix(outStr, "E: ") {
+			t.Errorf("There should be no error, instead got: '%s'", outStr)
+		}
+
+		out, err = os.ReadFile(outputFileName)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		expected := `<index>
+ <vendor>vv</vendor>
+ <url>uu</url>
+ <>
+ <pindex>
+  <pdsc vendor="TheVendor" url="http://vendor.com/" name="ThePack" version="1.2.3" timestamp=""></pdsc>
+  <pdsc vendor="TheVendor" url="http://vendor.com/" name="TheOtherPack" version="1.1.0" timestamp=""></pdsc>
+  <pdsc vendor="TheOtherVendor" url="http://other-vendor.com/" name="ThePackage" version="0.0.1" timestamp=""></pdsc>
+ </pindex>
+</index>`
+		s := string(out)
+		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare
+		_, se, _ = strings.Cut(se, "timestamp")
+		AssertEqual(t, sa+se, expected)
+
+		Logger.SetFile(currLogFile)
+		Logger.SetLevel(currLevel)
+		ExitOnError(os.RemoveAll(outputFileName))
+	})
 }
