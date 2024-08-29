@@ -12,7 +12,7 @@ jobs:
         platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: golangci/golangci-lint-action@v6
         with:
           # must be specified without patch version
@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install go 1.22
         uses: actions/setup-go@v5
         with:
@@ -45,7 +45,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install go 1.22
         uses: actions/setup-go@v5
         with:
