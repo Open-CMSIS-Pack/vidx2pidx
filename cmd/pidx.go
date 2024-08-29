@@ -137,7 +137,7 @@ func (p *PidxXML) Update(vidx *VidxXML, vidxFileName string, outputFileName stri
 	p.Vendor = strings.TrimSuffix(filename, filepath.Ext(filename))
 	p.URL = outputFileName
 	t := time.Now()
-	p.Timestamp = t.Format(time.DateTime)
+	p.Timestamp = t.Format(time.RFC3339)
 
 	var wg sync.WaitGroup
 
