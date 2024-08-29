@@ -7,13 +7,18 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"path/filepath"
+	"strings"
 	"sync"
+	"time"
 )
 
 // PidxXML maps the PIDX file format.
 // Ref: https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/Utilities/PackIndex.xsd
 type PidxXML struct {
 	XMLName   xml.Name `xml:"index"`
+	Vendor    string   `xml:"vendor"`
+	URL       string   `xml:"url"`
 	Timestamp string   `xml:"timestamp"`
 
 	Pindex struct {
@@ -125,8 +130,14 @@ func updatePdscListTask(id int, vendorPidx VendorPidx, pidx *PidxXML, wg *sync.W
 }
 
 // Update generates a flattened PIDX file containing all PDSC tags collected from a given VIDX file.
-func (p *PidxXML) Update(vidx *VidxXML) error {
+func (p *PidxXML) Update(vidx *VidxXML, vidxFileName string, outputFileName string) error {
 	Logger.Info("Updating list of packages")
+
+	filename := filepath.Base(vidxFileName)
+	p.Vendor = strings.TrimSuffix(filename, filepath.Ext(filename))
+	p.URL = outputFileName
+	t := time.Now()
+	p.Timestamp = t.Format(time.DateTime)
 
 	var wg sync.WaitGroup
 

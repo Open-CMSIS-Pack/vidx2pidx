@@ -7,7 +7,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path"
@@ -52,14 +52,14 @@ func ReadURL(url string) ([]byte, error) {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return empty, err
 	}
 
 	if len(CacheDir) > 0 {
 		fileName := path.Join(CacheDir, path.Base(url))
-		err = ioutil.WriteFile(fileName, body, 0600)
+		err = os.WriteFile(fileName, body, 0600)
 		if err != nil {
 			return body, err
 		}
@@ -85,7 +85,7 @@ func ReadXML(path string, targetStruct interface{}) error {
 			return err
 		}
 
-		contents, err = ioutil.ReadAll(xmlFile)
+		contents, err = io.ReadAll(xmlFile)
 		if err != nil {
 			return err
 		}
@@ -110,7 +110,7 @@ func WriteXML(path string, targetStruct interface{}) error {
 		return nil
 	}
 
-	err = ioutil.WriteFile(path, output, 0600)
+	err = os.WriteFile(path, output, 0600)
 	if err != nil {
 		return err
 	}

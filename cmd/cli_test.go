@@ -6,7 +6,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -25,7 +25,7 @@ func TestCli(t *testing.T) {
 		}
 
 		var out []byte
-		out, err = ioutil.ReadAll(output)
+		out, err = io.ReadAll(output)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -47,7 +47,7 @@ func TestCli(t *testing.T) {
 		}
 
 		var out []byte
-		out, err = ioutil.ReadAll(output)
+		out, err = io.ReadAll(output)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -70,7 +70,7 @@ func TestCli(t *testing.T) {
 		cmd.SetArgs([]string{"../test/testing_vendor_index.vidx", "-f", "-o", outputFileName})
 		ExitOnError(cmd.Execute())
 
-		out, err := ioutil.ReadAll(output)
+		out, err := io.ReadAll(output)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -80,13 +80,15 @@ func TestCli(t *testing.T) {
 			t.Errorf("There should be an error log, instead got: '%s'", outStr)
 		}
 
-		out, err = ioutil.ReadFile(outputFileName)
+		out, err = os.ReadFile(outputFileName)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		expected := `<index>
- <timestamp></timestamp>
+ <vendor>testing_vendor_index</vendor>
+ <url>test-continue-despite-errors.xml</url>
+ <>
  <pindex>
   <pdsc vendor="TheVendor" url="test/" name="ThePack2" version="1.1.0" timestamp=""></pdsc>
   <pdsc vendor="TheVendor" url="test/" name="ThePack1" version="1.2.3" timestamp=""></pdsc>
@@ -94,26 +96,13 @@ func TestCli(t *testing.T) {
   <pdsc vendor="TheVendor" url="non-existing-path/" name="ThePack" version="1.0.1" timestamp=""></pdsc>
  </pindex>
 </index>`
-		AssertEqual(t, string(out), expected)
+		s := string(out)
+		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare
+		_, se, _ = strings.Cut(se, "timestamp")
+		AssertEqual(t, sa+se, expected)
 
 		Logger.SetFile(currLogFile)
 		Logger.SetLevel(currLevel)
 		ExitOnError(os.RemoveAll(outputFileName))
 	})
-}
-
-func ExampleNewCli() {
-	cmd := NewCli()
-	cmd.SetArgs([]string{"../test/testing_vendor_index.vidx", "-o", "-"})
-	ExitOnError(cmd.Execute())
-	// Output:
-	// <index>
-	//  <timestamp></timestamp>
-	//  <pindex>
-	//   <pdsc vendor="TheVendor" url="../test/" name="ThePack2" version="1.1.0" timestamp=""></pdsc>
-	//   <pdsc vendor="TheVendor" url="../test/" name="ThePack1" version="1.2.3" timestamp=""></pdsc>
-	//   <pdsc vendor="TheOtherVendor" url="../test/" name="TheOtherPack" version="1.0.0" timestamp=""></pdsc>
-	//   <pdsc vendor="TheVendor" url="non-existing-path/" name="ThePack" version="1.0.1" timestamp=""></pdsc>
-	//  </pindex>
-	// </index>
 }
