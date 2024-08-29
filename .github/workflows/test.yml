@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
-      - uses: golangci/golangci-lint-action@v2
+      - uses: golangci/golangci-lint-action@v6
         with:
           # must be specified without patch version
           version: v1.36
@@ -29,7 +29,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: Install go 1.22
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
       - name: Check formatting
@@ -47,7 +47,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: Install go 1.22
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
       - name: Unit testing
