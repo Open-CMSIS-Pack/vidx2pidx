@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Install go 1.22.5
+      - name: Install go 1.22
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Install go 1.22.5
+      - name: Install go 1.22
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
