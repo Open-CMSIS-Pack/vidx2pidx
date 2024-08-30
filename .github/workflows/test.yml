@@ -16,7 +16,7 @@ jobs:
       - uses: golangci/golangci-lint-action@v6
         with:
           # must be specified without patch version
-          version: v1.36
+          version: latest
 
   format:
     name: Format

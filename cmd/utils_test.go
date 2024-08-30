@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -220,7 +219,6 @@ func TestReadXML(t *testing.T) {
 	t.Run("test local xml file fails to read", func(t *testing.T) {
 		errString := "failed to read file"
 
-		// ioutil.ReadAll is just an alias to io.ReadAll
 		monkey.Patch(io.ReadAll, func(r io.Reader) ([]byte, error) {
 			var empty []byte
 			return empty, errors.New(errString)
@@ -320,7 +318,7 @@ func TestWriteXML(t *testing.T) {
 			t.Errorf("WriteXML should not return error on valid xml and valid file: %s", err)
 		}
 
-		written, err2 := ioutil.ReadFile(fileName)
+		written, err2 := os.ReadFile(fileName)
 		if err2 != nil {
 			t.Fatalf("Can't open file %s to test if XML got actually written: %s", fileName, err2)
 		}
