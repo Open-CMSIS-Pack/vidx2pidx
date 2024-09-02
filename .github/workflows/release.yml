@@ -6,23 +6,35 @@ on:
       - "v*"
 
 jobs:
+  test:
+    uses: Open-CMSIS-Pack/vidx2pidx/.github/workflows/test.yml@main
+
   goreleaser:
+    needs: test
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up Go 1.22
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version-file: go.mod
+          check-latest: true
+
       - name: Generate release notes
         run: |
           git fetch --unshallow
           ./scripts/release_notes > /tmp/RELEASE_NOTES
+
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: release --rm-dist --release-notes=/tmp/RELEASE_NOTES
+          args: release ${{ github.event_name != 'push' && '--snapshot' || '' }} --clean --release-notes=/tmp/RELEASE_NOTES
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
