@@ -42,18 +42,17 @@ Just head to the release page and download the binary for your system.
   </index>
   ```
 - invoke `vidx2pidx vendor.vidx` 
+  ```bash
+  $ vidx2pidx <index>.vidx
 
-```bash
-$ vidx2pidx <index>.vidx
-
-Options:
-
-  -h, --help        show usage and help info
-  -V, --version     show version and copyright info
-  -v, --verbose     show progress details
-  -o, --output      specify index file directory and name
-  -c, --cachedir    specify directory where downloaded pidx and pdsc files are stored (default ./.idxcache)
-  -f, --force       force update – ignore timestamp information
+  Options:
+  
+    -h, --help        show usage and help info
+    -V, --version     show version and copyright info
+    -v, --verbose     show progress details
+    -o, --output      specify index file directory and name
+    -c, --cachedir    specify directory where downloaded pidx and pdsc files are stored (default ./.idxcache)
+    -f, --force       force update – ignore timestamp information
   ```
 
 Now the generated `index.pidx` can be used with cpackget to validate that all listed packs can be installed:
