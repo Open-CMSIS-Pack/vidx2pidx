@@ -24,3 +24,9 @@ jobs:
           make OS=windows ARCH=amd64 build/vidx2pidx.exe
           make clean
           make OS=darwin  ARCH=amd64 build/vidx2pidx
+          make clean
+          make OS=windows ARCH=arm64 build/vidx2pidx.exe
+          make clean
+          make OS=darwin  ARCH=arm64 build/vidx2pidx
+          make clean
+          make OS=linux  ARCH=arm64 build/vidx2pidx
