@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -304,7 +305,11 @@ func TestPidxXML_Update(t *testing.T) {
 		})
 
 		pidx := NewPidx()
-		ExitOnError(pidx.Update(vidx, "vv", "uu"))
+		if runtime.GOOS == "windows" {
+			ExitOnError(pidx.Update(vidx, "vv", "C:\\uu"))
+		} else {
+			ExitOnError(pidx.Update(vidx, "vv", "/uu"))
+		}
 		ExitOnError(WriteXML(outputFileName, pidx))
 
 		out, err := io.ReadAll(output)
@@ -324,7 +329,7 @@ func TestPidxXML_Update(t *testing.T) {
 
 		expected := `<index>
  <vendor>vv</vendor>
- <url>uu</url>
+ <url>file:///uu</url>
  <>
  <pindex>
   <pdsc vendor="TheVendor" url="http://vendor.com/" name="ThePack" version="1.2.3" timestamp=""></pdsc>
@@ -332,6 +337,9 @@ func TestPidxXML_Update(t *testing.T) {
   <pdsc vendor="TheOtherVendor" url="http://other-vendor.com/" name="ThePackage" version="0.0.1" timestamp=""></pdsc>
  </pindex>
 </index>`
+		if runtime.GOOS == "windows" {
+			expected = strings.Replace(expected, "///uu", "//C:/uu", -1)
+		}
 		s := string(out)
 		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare
 		_, se, _ = strings.Cut(se, "timestamp")
