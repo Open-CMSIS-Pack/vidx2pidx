@@ -4,3 +4,5 @@ testing.log
 index.pidx
 .idxcache
 test/cache
+.vscode/
+*.exe
