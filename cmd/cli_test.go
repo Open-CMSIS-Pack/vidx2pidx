@@ -9,7 +9,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 )
@@ -89,7 +88,7 @@ func TestCli(t *testing.T) {
 
 		expected := `<index>
  <vendor>testing_vendor_index</vendor>
- <url>file:///XX/test-continue-despite-errors.xml</url>
+ <url>file://XX/test-continue-despite-errors.xml</url>
  <>
  <pindex>
   <pdsc vendor="TheVendor" url="test/" name="ThePack2" version="1.1.0" timestamp=""></pdsc>
@@ -100,9 +99,6 @@ func TestCli(t *testing.T) {
 </index>`
 		wd, _ := os.Getwd()
 		wd = filepath.ToSlash(wd)
-		if runtime.GOOS == "windows" {
-			expected = strings.Replace(expected, "///XX", "//XX", -1)
-		}
 		expected = strings.Replace(expected, "XX", wd, -1)
 		s := string(out)
 		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare
