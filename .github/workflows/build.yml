@@ -14,10 +14,14 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Install go 1.22
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
+
       - name: Build
         run: |
           make build/vidx2pidx

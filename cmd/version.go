@@ -3,9 +3,9 @@
 
 package main
 
-// Version contains the version of vidx2pid.
+// version contains the version of vidx2pid.
 // Its value is collected in build time. See `make build/vidx2pidx`.
-var Version string
+var version string
 
 // License is a hardcoded string specifying vidx2pidx's license.
 const License = `Copyright 2021 Linaro
