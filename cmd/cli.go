@@ -25,8 +25,7 @@ var flags struct {
 
 // printVersionAndLicense prints out vidx2pidx current version and its license.
 func printVersionAndLicense(file io.Writer) {
-	fmt.Fprintf(file, "vidx2pidx version %v\n", Version)
-	fmt.Fprintf(file, "%v\n", License)
+	fmt.Fprintf(file, "vidx2pidx version %v %v\n", Version, License)
 }
 
 // NewCli creates a new instance of vidx2pidx cli.
