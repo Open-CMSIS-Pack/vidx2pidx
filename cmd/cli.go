@@ -23,9 +23,9 @@ var flags struct {
 	version        bool
 }
 
-// printVersionAndLicense prints out vidx2pidx current version and its license.
-func printVersionAndLicense(file io.Writer) {
-	fmt.Fprintf(file, "vidx2pidx version %v %v\n", version, License)
+// printVersion prints out vidx2pidx current version
+func printVersion(file io.Writer) {
+	fmt.Fprintf(file, "vidx2pidx version %v %v\n", version, CopyrightNotice)
 }
 
 // NewCli creates a new instance of vidx2pidx cli.
@@ -35,7 +35,7 @@ func NewCli() *cobra.Command {
 		Short: "This utility converts a vendor index file into a vendor independent package index file.",
 		Run: func(cmd *cobra.Command, args []string) {
 			if flags.version {
-				printVersionAndLicense(cmd.OutOrStdout())
+				printVersion(cmd.OutOrStdout())
 				return
 			}
 
