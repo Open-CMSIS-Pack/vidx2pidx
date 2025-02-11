@@ -7,4 +7,4 @@ package main
 // Its value is collected in build time. See `make build/vidx2pidx`.
 var version string
 
-const CopyrightNotice = " (C) 2025 Arm Ltd. and Contributors"
+const CopyrightNotice = "(C) 2021 Linaro"
