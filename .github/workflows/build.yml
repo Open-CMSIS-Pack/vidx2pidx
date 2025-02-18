@@ -2,6 +2,9 @@ name: Build
 
 on: [push]
 
+permissions:
+  contents: read
+
 jobs:
 
   build:
@@ -11,13 +14,18 @@ jobs:
     name: '${{ matrix.platform }}'
     runs-on: ${{ matrix.platform }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
       - name: Install go 1.22
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
         with:
           go-version-file: go.mod
 
@@ -44,7 +52,7 @@ jobs:
           GOOS=linux GOARCH=arm64 go build -o build/lin-arm64/vidx2pidx ./cmd
 
       - name: Archive windows amd64 binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: vidx2pidx-windows-amd64
           path: ./build/win-amd64/vidx2pidx.exe
@@ -52,7 +60,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive windows arm64 binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: vidx2pidx-windows-arm64
           path: ./build/win-arm64/vidx2pidx.exe
@@ -60,7 +68,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive macos amd64 binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: vidx2pidx-mac-amd64
           path: ./build/mac-amd64/vidx2pidx
@@ -68,7 +76,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive macos arm64 binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: vidx2pidx-mac-arm64
           path: ./build/mac-arm64/vidx2pidx
@@ -76,7 +84,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive linux amd64 binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: vidx2pidx-lin-amd64
           path: ./build/lin-amd64/vidx2pidx
@@ -84,7 +92,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive linux arm64 binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: vidx2pidx-lin-arm64
           path: ./build/lin-arm64/vidx2pidx
