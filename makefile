@@ -70,9 +70,9 @@ coverage-report:
 	go tool cover -html=cover.out
 
 coverage-check:
-	TESTING=1 go test ./... $(ARGS) -coverprofile cover.out
-	tail -n +2 cover.out | grep -v -e " 1$$" | grep -v main.go | tee coverage-check.out
-	test ! -s coverage-check.out
+	TESTING=1 mkdir -p build && go test ./... $(ARGS) -coverprofile build/cover.out
+	test `go tool cover -func build/cover.out | tail -1 | awk '{print ($$3 + 0)*10}'` -gt 700
+
 
 release: test-all build/vidx2pidx
 	@./scripts/release

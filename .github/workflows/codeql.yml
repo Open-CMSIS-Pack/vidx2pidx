@@ -15,10 +15,18 @@ on:
   push:
     branches: ["main"]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: ["main"]
-  schedule:
-    - cron: "0 0 * * 1"
+    paths:
+      - '.github/workflows/codeql.yml'
+      - 'cmd/**'
+      - 'test/**'
+      - 'go.mod'
+      - 'go.sum'
+      - 'makefile'
+      - '!**/*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
