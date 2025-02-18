@@ -4,6 +4,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/open-cmsis-pack/vidx2pidx)](https://goreportcard.com/report/github.com/open-cmsis-pack/vidx2pidx)
 [![GoDoc](https://godoc.org/github.com/open-cmsis-pack/vidx2pidx?status.svg)](https://godoc.org/github.com/open-cmsis-pack/vidx2pidx)
 
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Open-CMSIS-Pack/vidx2pidx/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Open-CMSIS-Pack/vidx2pidx)
+
 # vidx2pidx: Open-CMSIS-Pack Package Index Generator Tool
 
 This is the git repository for the `vidx2pidx` tool. It takes in `*.vidx` file
