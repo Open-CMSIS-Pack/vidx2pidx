@@ -1,32 +1,56 @@
-# Developing vidx2pidx
+# Developing `vidx2pidx`
 
-Follow steps below to start developing for `vidx2pidx`:
-1. Requirements:
-	- [Install Make](https://www.gnu.org/software/make/)
-	- [Install Golang](https://golang.org/doc/install) 
-	- [Install GolangCI-Lint](https://golangci-lint.run/usage/install/#local-installation)
+Follow these steps to set up and start developing for `vidx2pidx`:
 
-2. Clone the repo:
-`$ git clone https://github.com/open-cmsis-pack/vidx2pidx.git`
+## Prerequisites
 
-3. Enter the checked source
-`cd vidx2pidx`
+Ensure you have the following installed:
 
-4. Configure your local environment
-`make config`
+- [GNU Make](https://www.gnu.org/software/make/)
+- [Golang](https://golang.org/doc/install)
+- [GolangCI-Lint](https://golangci-lint.run/usage/install/#local-installation)
 
-5. Make sure all tests are passing
-`make test-all`
+## Setup
 
-6. Make sure it builds
-`make build/vidx2pidx`
+1. Clone the repository:
 
-7. Done! You can now start changing the source code, please refer to [contributing guide](CONTRIBUTING.md) to start contributing to the project
+   ```sh
+   git clone https://github.com/open-cmsis-pack/vidx2pidx.git
+   ```
 
-# Releasing
+2. Navigate into the project directory:
 
-If you have rights to push to the `main` branch of this repo, you might be entitled to
-make releases. Do that by running:
-`make release`
+   ```sh
+   cd vidx2pidx
+   ```
 
-*NOTE*: We use [Semantic Versioning](https://semver.org/) for versioning vidx2pidx.
+3. Configure your local environment:
+
+   ```sh
+   make config
+   ```
+
+4. Run tests to verify everything is working:
+
+   ```sh
+   make test-all
+   ```
+
+5. Build the project:
+
+   ```sh
+   make build/vidx2pidx
+   ```
+
+6. You're all set! 🎉 Start modifying the source code and refer to the [Contributing Guide](CONTRIBUTING.md)
+for guidelines on contributing.
+
+## Releasing
+
+If you have push access to the `main` branch, you can create a new release by running:
+
+```sh
+make release
+```
+
+📌 **Note:** We follow [Semantic Versioning](https://semver.org/) for versioning `vidx2pidx`.  
