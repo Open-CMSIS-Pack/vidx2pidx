@@ -32,7 +32,7 @@ jobs:
         with:
           args: '**/*.md'
           config: '.github/markdownlint.jsonc'
-          ignore: 'third_party_licenses.md'
+          ignore: 'third_party_licenses.md CHANGELOG.md'
 
       - name: Remove markdownlint warning matcher
         if: always()

@@ -17,10 +17,11 @@ and generate a `pidx`-formatted output listing packages.
 
 Just head to the release page and download the binary for your system.
 
-
 ## Usage
+
 - update your `vendor.pidx` file as [documented](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html#pidxFile)
-  ```
+
+  ```xml
   <?xml version="1.0" encoding="UTF-8" ?>
   <index schemaVersion="1.0.0" xs:noNamespaceSchemaLocation="PackIndex.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
     <vendor>MyVendor</vendor>
@@ -32,8 +33,10 @@ Just head to the release page and download the binary for your system.
     </pindex>
   </index>
   ```
-- create a vendor index file as [documented]( )
-  ```
+
+- create a vendor index file as documented
+
+  ```xml
   <?xml version="1.0" encoding="UTF-8" ?>
   <index schemaVersion="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="PackIndex.xsd">
     <vendor>MyVendor</vendor>
@@ -45,7 +48,9 @@ Just head to the release page and download the binary for your system.
     </vindex>
   </index>
   ```
-- invoke `vidx2pidx vendor.vidx` 
+
+- invoke `vidx2pidx vendor.vidx`
+
   ```bash
   $ vidx2pidx <index>.vidx
 
@@ -60,6 +65,7 @@ Just head to the release page and download the binary for your system.
   ```
 
 Now the generated `index.pidx` can be used with cpackget to validate that all listed packs can be installed:
-- invoke `cpackget init ./index.pidx -R ./pack_root_test` to use the generated index.pidx in pack_root_test/.Web/index.pidx
-- invoke `cpackget --public -R /pack_root_test` to list all latest public pack versions
 
+- invoke `cpackget init ./index.pidx -R ./pack_root_test` to use the generated index.pidx in
+ pack_root_test/.Web/index.pidx
+- invoke `cpackget --public -R /pack_root_test` to list all latest public pack versions
