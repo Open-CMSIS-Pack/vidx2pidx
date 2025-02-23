@@ -67,7 +67,7 @@ jobs:
           GOOS=linux GOARCH=arm64 go build -o build/lin-arm64/vidx2pidx ./cmd
 
       - name: Archive windows amd64 binaries
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: vidx2pidx-windows-amd64
           path: ./build/win-amd64/vidx2pidx.exe
@@ -75,7 +75,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive windows arm64 binaries
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: vidx2pidx-windows-arm64
           path: ./build/win-arm64/vidx2pidx.exe
@@ -83,7 +83,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive macos amd64 binaries
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: vidx2pidx-mac-amd64
           path: ./build/mac-amd64/vidx2pidx
@@ -91,7 +91,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive macos arm64 binaries
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: vidx2pidx-mac-arm64
           path: ./build/mac-arm64/vidx2pidx
@@ -99,7 +99,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive linux amd64 binaries
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: vidx2pidx-lin-amd64
           path: ./build/lin-amd64/vidx2pidx
@@ -107,7 +107,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive linux arm64 binaries
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: vidx2pidx-lin-arm64
           path: ./build/lin-arm64/vidx2pidx
