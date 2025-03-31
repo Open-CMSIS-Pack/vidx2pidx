@@ -118,7 +118,7 @@ func TestReadURL(t *testing.T) {
 		goodServer := httptest.NewServer(
 			http.HandlerFunc(
 				func(w http.ResponseWriter, r *http.Request) {
-					fmt.Fprintln(w, goodResponse)
+					fmt.Fprintln(w, string(goodResponse))
 				},
 			),
 		)
@@ -142,7 +142,7 @@ func TestReadURL(t *testing.T) {
 		goodServer := httptest.NewServer(
 			http.HandlerFunc(
 				func(w http.ResponseWriter, r *http.Request) {
-					fmt.Fprintln(w, goodResponse)
+					fmt.Fprintln(w, string(goodResponse))
 				},
 			),
 		)
@@ -157,7 +157,7 @@ func TestReadURL(t *testing.T) {
 		goodServer := httptest.NewServer(
 			http.HandlerFunc(
 				func(w http.ResponseWriter, r *http.Request) {
-					fmt.Fprintln(w, goodResponse)
+					fmt.Fprintln(w, string(goodResponse))
 				},
 			),
 		)

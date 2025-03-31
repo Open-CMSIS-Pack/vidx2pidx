@@ -338,7 +338,7 @@ func TestPidxXML_Update(t *testing.T) {
  </pindex>
 </index>`
 		if runtime.GOOS == "windows" {
-			expected = strings.Replace(expected, "///uu", "//C:/uu", -1)
+			expected = strings.ReplaceAll(expected, "///uu", "//C:/uu")
 		}
 		s := string(out)
 		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare
