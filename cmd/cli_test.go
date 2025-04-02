@@ -96,7 +96,7 @@ func TestCli(t *testing.T) {
 </index>`
 		wd, _ := os.Getwd()
 		wd = filepath.ToSlash(wd)
-		expected = strings.Replace(expected, "XX", wd, -1)
+		expected = strings.ReplaceAll(expected, "XX", wd)
 		s := string(out)
 		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare
 		_, se, _ = strings.Cut(se, "timestamp")
