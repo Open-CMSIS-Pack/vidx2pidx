@@ -21,3 +21,7 @@ linters:
       - common-false-positives
       - legacy
       - std-error-handling
+formatters:
+  enable:
+    - gofmt
+    - goimports
