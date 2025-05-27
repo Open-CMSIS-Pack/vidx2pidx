@@ -4,8 +4,8 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/open-cmsis-pack/vidx2pidx)](https://goreportcard.com/report/github.com/open-cmsis-pack/vidx2pidx)
 [![GoDoc](https://godoc.org/github.com/open-cmsis-pack/vidx2pidx?status.svg)](https://godoc.org/github.com/open-cmsis-pack/vidx2pidx)
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/b97b1ecaad39a763ceca/maintainability)](https://codeclimate.com/github/Open-CMSIS-Pack/vidx2pidx/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/b97b1ecaad39a763ceca/test_coverage)](https://codeclimate.com/github/Open-CMSIS-Pack/vidx2pidx/test_coverage)
+[![Maintainability](https://qlty.sh/badges/bcdfb931-e2dc-4d84-b248-52e0f053f30c/maintainability.svg)](https://qlty.sh/gh/Open-CMSIS-Pack/projects/vidx2pidx)
+[![Test Coverage](https://qlty.sh/badges/bcdfb931-e2dc-4d84-b248-52e0f053f30c/test_coverage.svg)](https://qlty.sh/gh/Open-CMSIS-Pack/projects/vidx2pidx)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Open-CMSIS-Pack/vidx2pidx/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Open-CMSIS-Pack/vidx2pidx)
 
 # vidx2pidx: Open-CMSIS-Pack Package Index Generator Tool
