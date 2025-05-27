@@ -55,7 +55,7 @@ Just head to the release page and download the binary for your system.
   $ vidx2pidx <index>.vidx
 
   Options:
-  
+
     -h, --help        show usage and help info
     -V, --version     show version and copyright info
     -v, --verbose     show progress details
