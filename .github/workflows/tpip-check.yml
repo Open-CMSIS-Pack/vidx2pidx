@@ -51,7 +51,7 @@ jobs:
         run:  |
           go-licenses report . --ignore github.com/Open-CMSIS-Pack/vidx2pidx --template ../scripts/template/${{ env.tpip_report }}.template > ../${{ env.tpip_report }}
         working-directory: ./cmd
-        
+
       - name: Archive TPIP report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

@@ -121,7 +121,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install \
             ninja-build
-  
+
       - name: Install windows deps
         if: ${{ startsWith(matrix.platform, 'windows') }}
         run: choco install -y ninja
@@ -182,7 +182,7 @@ jobs:
         with:
           files: "artifacts/**/vidx2pidx-testreport-*.xml"
           report_individual_runs: true
-        
+
   coverage:
     if: ${{ github.workflow != 'Release' && github.repository == 'Open-CMSIS-Pack/vidx2pidx' }}
     needs: [ test ]

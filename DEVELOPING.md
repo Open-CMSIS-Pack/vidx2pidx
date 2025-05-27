@@ -53,4 +53,4 @@ If you have push access to the `main` branch, you can create a new release by ru
 make release
 ```
 
-📌 **Note:** We follow [Semantic Versioning](https://semver.org/) for versioning `vidx2pidx`.  
+📌 **Note:** We follow [Semantic Versioning](https://semver.org/) for versioning `vidx2pidx`.
