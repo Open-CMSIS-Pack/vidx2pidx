@@ -55,4 +55,3 @@ jobs:
           use-verbose-mode: 'yes'
           base-branch: ${{ github.base_ref }}
           config-file: '.github/markdown-link-check.jsonc'
-

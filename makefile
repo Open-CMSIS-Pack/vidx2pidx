@@ -65,7 +65,7 @@ test:
 
 test-all: format-check coverage-check lint
 
-coverage-report: 
+coverage-report:
 	TESTING=1 go test ./... -coverprofile cover.out
 	go tool cover -html=cover.out
 
