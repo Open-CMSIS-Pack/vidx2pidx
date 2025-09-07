@@ -1,15 +1,21 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright Contributors to the vidx2pidx project. */
+
 package main
 
 import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 )
 
+// AnyErr receives a slice of errors and return the first that's not nil.
+// Returns nil if all errors in the slice are nil.
 func AnyErr(errs []error) error {
 	for _, err := range errs {
 		if err != nil {
@@ -20,6 +26,7 @@ func AnyErr(errs []error) error {
 	return nil
 }
 
+// ExitOnError exits the program with -1 in case the error parameter is not nil.
 func ExitOnError(err error) {
 	if err != nil {
 		Logger.Error(err.Error())
@@ -27,9 +34,14 @@ func ExitOnError(err error) {
 	}
 }
 
+// CacheDir contains the directory path where cached files will live.
+var CacheDir string
+
+// ReadURL opens an URL and returns its contents.
+// Accessed URLs will be saved in CacheDir, if that is filled.
 func ReadURL(url string) ([]byte, error) {
 	var empty []byte
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) // #nosec
 	if err != nil {
 		return empty, err
 	}
@@ -40,14 +52,23 @@ func ReadURL(url string) ([]byte, error) {
 	}
 
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return empty, err
+	}
+
+	if len(CacheDir) > 0 {
+		fileName := path.Join(CacheDir, path.Base(url))
+		err = os.WriteFile(fileName, body, 0600)
+		if err != nil {
+			return body, err
+		}
 	}
 
 	return body, nil
 }
 
+// ReadXML unmarshals the XML file specified in "path" into "targetStruct".
 func ReadXML(path string, targetStruct interface{}) error {
 	var contents []byte
 	var err error
@@ -64,7 +85,7 @@ func ReadXML(path string, targetStruct interface{}) error {
 			return err
 		}
 
-		contents, err = ioutil.ReadAll(xmlFile)
+		contents, err = io.ReadAll(xmlFile)
 		if err != nil {
 			return err
 		}
@@ -77,6 +98,7 @@ func ReadXML(path string, targetStruct interface{}) error {
 	return nil
 }
 
+// WriteXML marshals the XML info from "targetStruct" and save it to "path".
 func WriteXML(path string, targetStruct interface{}) error {
 	output, err := xml.MarshalIndent(targetStruct, "", " ")
 	if err != nil {
@@ -88,10 +110,19 @@ func WriteXML(path string, targetStruct interface{}) error {
 		return nil
 	}
 
-	err = ioutil.WriteFile(path, output, 0666)
+	err = os.WriteFile(path, output, 0600)
 	if err != nil {
 		return err
 	}
 
+	return nil
+}
+
+// EnsureDir makes sure directory specified by dirName exists and it's writable.
+func EnsureDir(dirName string) error {
+	err := os.MkdirAll(dirName, 0755)
+	if err != nil && !os.IsExist(err) {
+		return err
+	}
 	return nil
 }

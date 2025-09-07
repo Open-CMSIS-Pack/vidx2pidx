@@ -1,3 +1,6 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright Contributors to the vidx2pidx project. */
+
 package main
 
 import (
@@ -15,7 +18,7 @@ func TestVidx(t *testing.T) {
 		})
 
 		vidx := NewVidx()
-		err := vidx.Init("test/dummy.xml")
+		err := vidx.Init("../test/dummy.xml")
 		if err == nil {
 			t.Error("VidxXML.Init() should fail if XML cannot be read")
 		}

@@ -1,0 +1,105 @@
+name: TPIP Check
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/tpip-check.yml"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "scripts/template/**"
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  tpip_report: "third_party_licenses.md"
+
+permissions:
+  contents: read
+
+jobs:
+  check-licenses:
+    # Avoid running this on forks
+    if: github.repository == 'Open-CMSIS-Pack/vidx2pidx'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      checks: write
+      pull-requests: write
+      actions: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Go tidy
+        run:  go mod tidy
+
+      - name: Install go-licenses
+        run:  go install github.com/google/go-licenses@5348b744d0983d85713295ea08a20cca1654a45e # v1.6.0
+
+      - name: Generate TPIP Report
+        run:  |
+          go-licenses report . --ignore github.com/Open-CMSIS-Pack/vidx2pidx --template ../scripts/template/${{ env.tpip_report }}.template > ../${{ env.tpip_report }}
+        working-directory: ./cmd
+
+      - name: Archive TPIP report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: tpip-report
+          path: ./${{ env.tpip_report }}
+
+      - name: Print TPIP Report
+        run: cat ${{ env.tpip_report }} >> $GITHUB_STEP_SUMMARY
+
+      - name: Check Licenses
+        run: go-licenses check . --ignore github.com/Open-CMSIS-Pack/vidx2pidx --disallowed_types=forbidden,restricted
+        working-directory: ./cmd
+
+  commit-changes:
+    # Running this job only on specific event
+    # in order to have workaround for issue
+    # related to deletion of GH checks/status data
+    permissions:
+      contents: write  # for peter-evans/create-pull-request to create branch
+      pull-requests: write  # for peter-evans/create-pull-request to create a PR
+    if: (github.event_name == 'schedule') || (github.event_name == 'workflow_dispatch')
+    needs: [ check-licenses ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Restore Changes
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: tpip-report
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          commit-message: Update TPIP report
+          title: ':robot: [TPIP] Automated report updates'
+          body: |
+            Third party IP report updates
+          branch: update-tpip
+          delete-branch: true
+          labels: TPIP
+          reviewers: soumeh01

@@ -1,6 +1,24 @@
 name: Build
 
-on: [push]
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/build.yml'
+      - 'cmd/**'
+      - 'test/**'
+      - 'go.mod'
+      - 'go.sum'
+      - 'makefile'
+      - '!**/*.md'
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
 
@@ -8,19 +26,90 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest]
-        go: [1.16.x]
-    name: '${{ matrix.platform }} | ${{ matrix.go }}'
+    name: '${{ matrix.platform }}'
     runs-on: ${{ matrix.platform }}
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - name: Install go 1.16
-        uses: actions/setup-go@v2
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
         with:
-          go-version: ${{ matrix.go }}
+          egress-policy: audit
+
+      - name: Check out repository code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Install go 1.22
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version-file: go.mod
+
       - name: Build
         run: |
           make build/vidx2pidx
           make OS=windows ARCH=amd64 build/vidx2pidx.exe
           make clean
           make OS=darwin  ARCH=amd64 build/vidx2pidx
+          make clean
+          make OS=windows ARCH=arm64 build/vidx2pidx.exe
+          make clean
+          make OS=darwin  ARCH=arm64 build/vidx2pidx
+          make clean
+          make OS=linux  ARCH=arm64 build/vidx2pidx
+
+      - name: Build executables
+        run: |
+          GOOS=windows GOARCH=amd64 go build -o build/win-amd64/vidx2pidx.exe ./cmd
+          GOOS=windows GOARCH=arm64 go build -o build/win-arm64/vidx2pidx.exe ./cmd
+          GOOS=darwin GOARCH=amd64 go build -o build/mac-amd64/vidx2pidx ./cmd
+          GOOS=darwin GOARCH=arm64 go build -o build/mac-arm64/vidx2pidx ./cmd
+          GOOS=linux GOARCH=amd64 go build -o build/lin-amd64/vidx2pidx ./cmd
+          GOOS=linux GOARCH=arm64 go build -o build/lin-arm64/vidx2pidx ./cmd
+
+      - name: Archive windows amd64 binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vidx2pidx-windows-amd64
+          path: ./build/win-amd64/vidx2pidx.exe
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive windows arm64 binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vidx2pidx-windows-arm64
+          path: ./build/win-arm64/vidx2pidx.exe
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive macos amd64 binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vidx2pidx-mac-amd64
+          path: ./build/mac-amd64/vidx2pidx
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive macos arm64 binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vidx2pidx-mac-arm64
+          path: ./build/mac-arm64/vidx2pidx
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive linux amd64 binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vidx2pidx-lin-amd64
+          path: ./build/lin-amd64/vidx2pidx
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive linux arm64 binaries
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vidx2pidx-lin-arm64
+          path: ./build/lin-arm64/vidx2pidx
+          retention-days: 1
+          if-no-files-found: error

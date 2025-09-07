@@ -1,3 +1,6 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright Contributors to the vidx2pidx project. */
+
 package main
 
 import (
@@ -5,10 +8,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path"
 	"reflect"
 	"testing"
 	"time"
@@ -109,12 +112,37 @@ func TestReadURL(t *testing.T) {
 		AssertEqual(t, err.Error(), "unexpected EOF")
 	})
 
+	t.Run("test fail to write to cache", func(t *testing.T) {
+
+		goodResponse := []byte("all good")
+		goodServer := httptest.NewServer(
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprintln(w, string(goodResponse))
+				},
+			),
+		)
+
+		// Enable cache temporarily
+		CacheDir = "test-fail-to-write-to-cache"
+		response, err := ReadURL(goodServer.URL + "/test")
+		CacheDir = ""
+
+		if err == nil && len(response) > 0 {
+			t.Error("ReadURL should return error when not able to write to cache")
+		}
+
+		if !os.IsNotExist(err) {
+			t.Errorf("Error should be related to no existing directory, instead got %s", err)
+		}
+	})
+
 	t.Run("test all good", func(t *testing.T) {
 		goodResponse := []byte("all good")
 		goodServer := httptest.NewServer(
 			http.HandlerFunc(
 				func(w http.ResponseWriter, r *http.Request) {
-					fmt.Fprintln(w, goodResponse)
+					fmt.Fprintln(w, string(goodResponse))
 				},
 			),
 		)
@@ -122,6 +150,34 @@ func TestReadURL(t *testing.T) {
 		if err != nil || len(response) == 0 {
 			t.Error("ReadURL should return OK")
 		}
+	})
+
+	t.Run("test all good with cache", func(t *testing.T) {
+		goodResponse := []byte("all good")
+		goodServer := httptest.NewServer(
+			http.HandlerFunc(
+				func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprintln(w, string(goodResponse))
+				},
+			),
+		)
+
+		CacheDir = "test-all-good-with-cache"
+		fileName := "test-all-good-with-cache"
+		ExitOnError(EnsureDir(CacheDir))
+
+		response, err := ReadURL(goodServer.URL + "/" + fileName)
+
+		if err != nil || len(response) == 0 {
+			t.Errorf("ReadURL should return OK, instead got: %s", err)
+		}
+
+		if _, err := os.Stat(path.Join(CacheDir, fileName)); os.IsNotExist(err) {
+			t.Errorf("Failed to write to cache: %s", err)
+		}
+
+		ExitOnError(os.RemoveAll(CacheDir))
+		CacheDir = ""
 	})
 }
 
@@ -163,13 +219,12 @@ func TestReadXML(t *testing.T) {
 	t.Run("test local xml file fails to read", func(t *testing.T) {
 		errString := "failed to read file"
 
-		// ioutil.ReadAll is just an alias to io.ReadAll
 		monkey.Patch(io.ReadAll, func(r io.Reader) ([]byte, error) {
 			var empty []byte
 			return empty, errors.New(errString)
 		})
 
-		err := ReadXML("test/dummy.xml", &dummyXML)
+		err := ReadXML("../test/dummy.xml", &dummyXML)
 		if err == nil {
 			t.Error("ReadXML should return error when local XML file fails to read")
 		}
@@ -184,7 +239,7 @@ func TestReadXML(t *testing.T) {
 			return []byte("<unclosed-tag"), nil
 		})
 
-		err := ReadXML("test/dummy.xml", &dummyXML)
+		err := ReadXML("../test/dummy.xml", &dummyXML)
 		if err == nil {
 			t.Error("ReadXML should return error when local XML file fails to read")
 		}
@@ -199,7 +254,7 @@ func TestReadXML(t *testing.T) {
 			return []byte("<dummy><contents>Dummy content</contents></dummy>"), nil
 		})
 
-		err := ReadXML("test/dummy.xml", &dummyXML)
+		err := ReadXML("../test/dummy.xml", &dummyXML)
 		if err != nil {
 			t.Error("ReadXML should not return error on valid XML files:")
 		}
@@ -241,7 +296,7 @@ func TestWriteXML(t *testing.T) {
 		})
 
 		xml := new(dummyXML)
-		err := WriteXML("test/dummy-out.xml", xml)
+		err := WriteXML("../test/dummy-out.xml", xml)
 		if err == nil {
 			t.Error("WriteXML should return error when it's not able to write to file")
 		}
@@ -254,7 +309,7 @@ func TestWriteXML(t *testing.T) {
 	// Test to stdout is covered in ExampleWriteXMLToStdout
 
 	t.Run("test write to file", func(t *testing.T) {
-		fileName := "test/dummy-out.xml"
+		fileName := "../test/dummy-out.xml"
 
 		xml := new(dummyXML)
 		xml.Contents = "dummy content"
@@ -263,7 +318,7 @@ func TestWriteXML(t *testing.T) {
 			t.Errorf("WriteXML should not return error on valid xml and valid file: %s", err)
 		}
 
-		written, err2 := ioutil.ReadFile(fileName)
+		written, err2 := os.ReadFile(fileName)
 		if err2 != nil {
 			t.Fatalf("Can't open file %s to test if XML got actually written: %s", fileName, err2)
 		}
@@ -272,6 +327,10 @@ func TestWriteXML(t *testing.T) {
  <dummy></dummy>
  <contents>dummy content</contents>
 </dummyXML>`))
+		err = os.Remove(fileName)
+		if err != nil {
+			t.Fatalf("Can't remove file %s: %s", fileName, err)
+		}
 	})
 }
 
@@ -288,4 +347,36 @@ func ExampleWriteXML() {
 	//  <dummy></dummy>
 	//  <contents>dummy content</contents>
 	// </dummyXML>
+}
+
+func TestEnsureDir(t *testing.T) {
+	t.Run("test if directory gets created", func(t *testing.T) {
+		dirName := "tmp/ensure-dir-test"
+		defer func() {
+			err := os.RemoveAll(dirName)
+			if err != nil {
+				t.Error("Directory created by EnsureDir should be removable")
+			}
+		}()
+
+		err := EnsureDir(dirName)
+		if err != nil {
+			t.Errorf("EnsureDir should not return error when creating directory: %s", err)
+		}
+	})
+
+	t.Run("test catch errors", func(t *testing.T) {
+		errMessage := "Fail to create dirs"
+		monkey.Patch(os.MkdirAll, func(path string, perm os.FileMode) error {
+			return errors.New(errMessage)
+		})
+
+		dirName := "tmp/ensure-dir-test"
+		err := EnsureDir(dirName)
+		if err == nil {
+			t.Errorf("EnsureDir should return error when not able to create dirs")
+		}
+		AssertEqual(t, err.Error(), errMessage)
+		monkey.Unpatch(os.MkdirAll)
+	})
 }
