@@ -101,11 +101,11 @@ jobs:
   test:
     strategy:
       matrix:
-        platform: [ubuntu-latest, windows-latest]
+        platform: [ubuntu-24.04, windows-2022]
         include:
-          - platform: ubuntu-latest
+          - platform: ubuntu-24.04
             target: linux
-          - platform: windows-latest
+          - platform: windows-2022
             target: windows
     name: 'Test (${{ matrix.target }})'
     runs-on: ${{ matrix.platform }}
