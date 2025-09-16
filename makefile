@@ -1,6 +1,11 @@
-# Having these will allow CI scripts to build for many OS's and ARCH's
-OS   := $(or ${OS},${OS},linux)
-ARCH := $(or ${ARCH},${ARCH},amd64)
+# Default to building for the host
+OS ?= $(shell uname)
+
+# Having this will allow CI scripts to build for many OS's and ARCH's
+ARCH ?= $(shell uname -m)
+
+# Retrieve version from git history
+VERSION ?= $(shell git describe --tags 2>/dev/null || echo unknown)
 
 # Path to lint tool
 GOLINTER ?= golangci-lint
@@ -9,26 +14,41 @@ GOFORMATTER ?= gofmt
 # Determine binary file name
 BIN_NAME := vidx2pidx
 PROG := build/$(BIN_NAME)
-ifneq (,$(findstring windows,$(OS)))
+ifneq (,$(findstring indows,$(OS)))
     PROG=build/$(BIN_NAME).exe
+    OS=windows
+else ifneq (,$(findstring Darwin,$(OS)))
+    OS=darwin
+else
+    # Default to Linux
+    OS=linux
+endif
+ifneq (,$(findstring x86_64,$(ARCH)))
+	ARCH=amd64
+else ifneq (,$(findstring aarch64,$(ARCH)))
+    ARCH=arm64
+else ifneq (,$(findstring unknown,$(ARCH)))
+	# fallback
+	ARCH=amd64
 endif
 
-SOURCES := $(wildcard *.go)
+SOURCES := $(wildcard cmd/*.go) $(wildcard cmd/*/*.go)
 
 all:
 	@echo Pick one of:
 	@echo $$ make $(PROG)
-	@echo $$ make run
+	@echo $$ make test-all
+	@echo $$ make release
 	@echo $$ make clean
 	@echo $$ make config
-	@echo $$ make release
+	@echo $$ make coverage-report
 	@echo
 	@echo Build for different OS's and ARCH's by defining these variables. Ex:
-	@echo $$ make OS=windows ARCH=amd64 build/$(BIN_NAME).exe  \# build for windows 64bits
-	@echo $$ make OS=darwin  ARCH=amd64 build/$(BIN_NAME)      \# build for MacOS 64bits
+	@echo $$ make OS=windows ARCH=amd64 build/$(BIN_NAME).exe
+	@echo $$ make OS=darwin  ARCH=amd64 build/$(BIN_NAME)
 	@echo
 	@echo Run tests
-	@echo $$ make test ARGS="<test args>"
+	@echo $$ make test-all
 	@echo
 	@echo Release a new version of $(BIN_NAME)
 	@echo $$ make release
@@ -44,7 +64,9 @@ all:
 
 $(PROG): $(SOURCES)
 	@echo Building project
-	GOOS=$(OS) GOARCH=$(ARCH) go build -ldflags "-X main.version=`git describe 2>/dev/null || echo unknown`" -o $(PROG) ./cmd
+	GOOS=$(OS) GOARCH=$(ARCH) go build -ldflags "-X main.version=$(VERSION)" -o $(PROG) ./cmd
+
+build: $(PROG)
 
 run: $(PROG)
 	@./$(PROG) $(ARGS) || true
@@ -60,18 +82,18 @@ format-check:
 	test ! -s format-check.out
 
 .PHONY: test release config
-test:
-	TESTING=1 go test $(ARGS) ./...
+test: $(SOURCES)
+	GOOS=$(OS) GOARCH=$(ARCH) go test $(ARGS) -v ./... -coverprofile ./cover.out
 
 test-all: format-check coverage-check lint
 
-coverage-report:
-	TESTING=1 go test ./... -coverprofile cover.out
-	go tool cover -html=cover.out
+coverage-report: test
+	go tool cover -html=./cover.out
 
-coverage-check:
-	TESTING=1 mkdir -p build && go test ./... $(ARGS) -coverprofile build/cover.out
-	test `go tool cover -func build/cover.out | tail -1 | awk '{print ($$3 + 0)*10}'` -gt 700
+coverage-check: test
+	@echo "Current coverage is: $(shell go tool cover -func ./cover.out | tail -1 | awk '{print ($$3 + 0)}')"%
+	@echo Checking if test coverage is atleast 96%
+	test `go tool cover -func ./cover.out | tail -1 | awk '{print ($$3 + 0)*10}'` -ge 960
 
 
 release: test-all build/vidx2pidx
