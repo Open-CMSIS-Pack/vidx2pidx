@@ -274,7 +274,8 @@ func TestPidxXML_Update(t *testing.T) {
 		Logger.SetFile(output)
 		Logger.SetLevel(DEBUG)
 
-		xml := `<index>
+		xml := `<?xml version="1.0" encoding="UTF-8"?>
+                <index>
                   <vendor>TheVendor</vendor>
                   <url>http://vendor.com/</url>
                   <timestamp></timestamp>
@@ -327,18 +328,19 @@ func TestPidxXML_Update(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expected := `<index>
- <vendor>vv</vendor>
- <url>file:///uu</url>
- <>
- <pindex>
-  <pdsc vendor="TheVendor" url="http://vendor.com/" name="ThePack" version="1.2.3" timestamp=""></pdsc>
-  <pdsc vendor="TheVendor" url="http://vendor.com/" name="TheOtherPack" version="1.1.0" timestamp=""></pdsc>
-  <pdsc vendor="TheOtherVendor" url="http://other-vendor.com/" name="ThePackage" version="0.0.1" timestamp=""></pdsc>
- </pindex>
+		expected := `<?xml version="1.0" encoding="UTF-8"?>
+<index schemaVersion="1.1.1" xs:noNamespaceSchemaLocation="PackIndex.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
+  <vendor>vv</vendor>
+  <url>file:///uu</url>
+  <>
+  <pindex>
+    <pdsc vendor="TheVendor" url="http://vendor.com/" name="ThePack" version="1.2.3"></pdsc>
+    <pdsc vendor="TheVendor" url="http://vendor.com/" name="TheOtherPack" version="1.1.0"></pdsc>
+    <pdsc vendor="TheOtherVendor" url="http://other-vendor.com/" name="ThePackage" version="0.0.1"></pdsc>
+  </pindex>
 </index>`
 		if runtime.GOOS == "windows" {
-			expected = strings.ReplaceAll(expected, "///uu", "//C:/uu")
+			expected = strings.ReplaceAll(expected, "///uu", "///C:/uu")
 		}
 		s := string(out)
 		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare
