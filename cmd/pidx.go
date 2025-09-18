@@ -16,10 +16,13 @@ import (
 // PidxXML maps the PIDX file format.
 // Ref: https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/Utilities/PackIndex.xsd
 type PidxXML struct {
-	XMLName   xml.Name `xml:"index"`
-	Vendor    string   `xml:"vendor"`
-	URL       string   `xml:"url"`
-	Timestamp string   `xml:"timestamp"`
+	XMLName           xml.Name `xml:"index"`
+	Vendor            string   `xml:"vendor"`
+	URL               string   `xml:"url"`
+	Timestamp         string   `xml:"timestamp"`
+	SchemaVersion     string   `xml:"schemaVersion,attr"`
+	XsiSchemaLocation string   `xml:"xs:noNamespaceSchemaLocation,attr"`
+	XmlnsXs           string   `xml:"xmlns:xs,attr"`
 
 	Pindex struct {
 		XMLName xml.Name  `xml:"pindex"`
@@ -32,12 +35,11 @@ type PidxXML struct {
 
 // PdscTag maps a <pdsc> tag that goes in PIDX files.
 type PdscTag struct {
-	XMLName   xml.Name `xml:"pdsc"`
-	Vendor    string   `xml:"vendor,attr"`
-	URL       string   `xml:"url,attr"`
-	Name      string   `xml:"name,attr"`
-	Version   string   `xml:"version,attr"`
-	Timestamp string   `xml:"timestamp,attr"`
+	XMLName xml.Name `xml:"pdsc"`
+	Vendor  string   `xml:"vendor,attr"`
+	URL     string   `xml:"url,attr"`
+	Name    string   `xml:"name,attr"`
+	Version string   `xml:"version,attr"`
 
 	err error
 }
@@ -136,9 +138,17 @@ func (p *PidxXML) Update(vidx *VidxXML, vidxFileName string, outputFileName stri
 	filename := filepath.Base(vidxFileName)
 	p.Vendor = strings.TrimSuffix(filename, filepath.Ext(filename))
 	p.URL, _ = filepath.Abs(outputFileName)
-	p.URL = "file://" + filepath.ToSlash(p.URL)
+	p.URL = filepath.ToSlash(p.URL)
+	p.URL = strings.TrimPrefix(p.URL, "/")
+	p.URL = "file:///" + p.URL
+
 	t := time.Now()
 	p.Timestamp = t.Format("2006-01-02T15:04:05")
+
+	// Set schemaVersion and schema location attributes as required by PackIndex.xsd
+	p.SchemaVersion = "1.1.1"
+	p.XsiSchemaLocation = "PackIndex.xsd"
+	p.XmlnsXs = "http://www.w3.org/2001/XMLSchema-instance"
 
 	var wg sync.WaitGroup
 
@@ -154,7 +164,6 @@ func (p *PidxXML) Update(vidx *VidxXML, vidxFileName string, outputFileName stri
 	// Now process package descriptors (vendors without pidx files)
 	offset := vidx.PidxLength()
 	for i, pdsc := range vidx.ListPdsc() {
-
 		errs[i+offset] = make([]error, 1)
 		errs[i+offset][0] = p.addPdsc(pdsc)
 	}

@@ -100,10 +100,12 @@ func ReadXML(path string, targetStruct interface{}) error {
 
 // WriteXML marshals the XML info from "targetStruct" and save it to "path".
 func WriteXML(path string, targetStruct interface{}) error {
-	output, err := xml.MarshalIndent(targetStruct, "", " ")
+	body, err := xml.MarshalIndent(targetStruct, "", "  ")
 	if err != nil {
 		return err
 	}
+
+	output := append([]byte(xml.Header), body...)
 
 	if path == "" || path == "-" {
 		os.Stdout.Write(output)

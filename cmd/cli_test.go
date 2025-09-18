@@ -83,19 +83,21 @@ func TestCli(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expected := `<index>
- <vendor>testing_vendor_index</vendor>
- <url>file://XX/test-continue-despite-errors.xml</url>
- <>
- <pindex>
-  <pdsc vendor="TheVendor" url="test/" name="ThePack2" version="1.1.0" timestamp=""></pdsc>
-  <pdsc vendor="TheVendor" url="test/" name="ThePack1" version="1.2.3" timestamp=""></pdsc>
-  <pdsc vendor="TheOtherVendor" url="test/" name="TheOtherPack" version="1.0.50" timestamp=""></pdsc>
-  <pdsc vendor="TheVendor" url="non-existing-path/" name="ThePack" version="1.0.1" timestamp=""></pdsc>
- </pindex>
+		expected := `<?xml version="1.0" encoding="UTF-8"?>
+<index schemaVersion="1.1.1" xs:noNamespaceSchemaLocation="PackIndex.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
+  <vendor>testing_vendor_index</vendor>
+  <url>file:///XX/test-continue-despite-errors.xml</url>
+  <>
+  <pindex>
+    <pdsc vendor="TheVendor" url="test/" name="ThePack2" version="1.1.0"></pdsc>
+    <pdsc vendor="TheVendor" url="test/" name="ThePack1" version="1.2.3"></pdsc>
+    <pdsc vendor="TheOtherVendor" url="test/" name="TheOtherPack" version="1.0.50"></pdsc>
+    <pdsc vendor="TheVendor" url="non-existing-path/" name="ThePack" version="1.0.1"></pdsc>
+  </pindex>
 </index>`
 		wd, _ := os.Getwd()
 		wd = filepath.ToSlash(wd)
+		wd = strings.TrimPrefix(wd, "/")
 		expected = strings.ReplaceAll(expected, "XX", wd)
 		s := string(out)
 		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare

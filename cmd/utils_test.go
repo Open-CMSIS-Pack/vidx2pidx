@@ -323,9 +323,10 @@ func TestWriteXML(t *testing.T) {
 			t.Fatalf("Can't open file %s to test if XML got actually written: %s", fileName, err2)
 		}
 
-		AssertEqual(t, written, []byte(`<dummyXML>
- <dummy></dummy>
- <contents>dummy content</contents>
+		AssertEqual(t, written, []byte(`<?xml version="1.0" encoding="UTF-8"?>
+<dummyXML>
+  <dummy></dummy>
+  <contents>dummy content</contents>
 </dummyXML>`))
 		err = os.Remove(fileName)
 		if err != nil {
@@ -343,10 +344,11 @@ func ExampleWriteXML() {
 	xml.Contents = "dummy content"
 	ExitOnError(WriteXML("", xml))
 	// Output:
-	// <dummyXML>
-	//  <dummy></dummy>
-	//  <contents>dummy content</contents>
-	// </dummyXML>
+	//<?xml version="1.0" encoding="UTF-8"?>
+	//<dummyXML>
+	//   <dummy></dummy>
+	//   <contents>dummy content</contents>
+	//</dummyXML>
 }
 
 func TestEnsureDir(t *testing.T) {
