@@ -1,6 +1,5 @@
 [![Release](https://github.com/Open-CMSIS-Pack/vidx2pidx/actions/workflows/release.yml/badge.svg)](https://github.com/Open-CMSIS-Pack/vidx2pidx/actions/workflows/release.yml)
-[![Build](https://github.com/open-cmsis-pack/vidx2pidx/actions/workflows/build.yml/badge.svg)](https://github.com/open-cmsis-pack/vidx2pidx/actions/workflows/build.yml/badge.svg)
-[![Tests](https://github.com/open-cmsis-pack/vidx2pidx/actions/workflows/test.yml/badge.svg)](https://github.com/open-cmsis-pack/vidx2pidx/actions/workflows/test.yml/badge.svg)
+[![Build And Test](https://github.com/Open-CMSIS-Pack/vidx2pidx/actions/workflows/ci.yml/badge.svg)](https://github.com/Open-CMSIS-Pack/vidx2pidx/actions/workflows/ci.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/open-cmsis-pack/vidx2pidx)](https://goreportcard.com/report/github.com/open-cmsis-pack/vidx2pidx)
 [![GoDoc](https://godoc.org/github.com/open-cmsis-pack/vidx2pidx?status.svg)](https://godoc.org/github.com/open-cmsis-pack/vidx2pidx)
 
@@ -19,7 +18,7 @@ Just head to the release page and download the binary for your system.
 
 ## Usage
 
-- update your `vendor.pidx` file as [documented](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html#pidxFile)
+- update your `vendor.pidx` file as [documented](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#packIndexFile)
 
   ```xml
   <?xml version="1.0" encoding="UTF-8" ?>
