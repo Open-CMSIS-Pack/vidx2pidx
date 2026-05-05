@@ -8,7 +8,7 @@ Ensure you have the following installed:
 
 - [GNU Make](https://www.gnu.org/software/make/)
 - [Golang](https://golang.org/doc/install)
-- [GolangCI-Lint](https://golangci-lint.run/usage/install/#local-installation)
+- [GolangCI-Lint](https://golangci-lint.run/docs/welcome/install/local/)
 
 ## Setup
 
