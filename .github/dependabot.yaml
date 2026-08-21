@@ -8,6 +8,11 @@ updates:
     open-pull-requests-limit: 10
     rebase-strategy: disabled
 
+    groups:
+      codeql-actions:
+        patterns:
+          - "github/codeql-action/*"
+
   - package-ecosystem: gomod
     directory: /
     schedule:
