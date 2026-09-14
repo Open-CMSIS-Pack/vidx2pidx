@@ -307,9 +307,12 @@ func TestPidxXML_Update(t *testing.T) {
 
 		pidx := NewPidx()
 		if runtime.GOOS == "windows" {
-			ExitOnError(pidx.Update(vidx, "vv", "C:\\uu"))
+			ExitOnError(pidx.Update(vidx, "vv", "C:\\uu\\index.pidx"))
 		} else {
-			ExitOnError(pidx.Update(vidx, "vv", "/uu"))
+			ExitOnError(pidx.Update(vidx, "vv", "/uu/index.pidx"))
+		}
+		if strings.HasSuffix(pidx.URL, "index.pidx") || !strings.HasSuffix(pidx.URL, "/") {
+			t.Errorf("PidxXML.Update() URL should contain only the output directory: %q", pidx.URL)
 		}
 		ExitOnError(WriteXML(outputFileName, pidx))
 
@@ -330,17 +333,18 @@ func TestPidxXML_Update(t *testing.T) {
 
 		expected := `<?xml version="1.0" encoding="UTF-8"?>
 <index schemaVersion="1.1.1" xs:noNamespaceSchemaLocation="PackIndex.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
-  <vendor>vv</vendor>
-  <url>file:///uu</url>
-  <>
+	<vendor>vv</vendor>
+	<url>file:///uu/</url>
+	<>
   <pindex>
     <pdsc vendor="TheVendor" url="http://vendor.com/" name="ThePack" version="1.2.3"></pdsc>
     <pdsc vendor="TheVendor" url="http://vendor.com/" name="TheOtherPack" version="1.1.0"></pdsc>
     <pdsc vendor="TheOtherVendor" url="http://other-vendor.com/" name="ThePackage" version="0.0.1"></pdsc>
   </pindex>
 </index>`
+		expected = strings.ReplaceAll(expected, "\t", "  ")
 		if runtime.GOOS == "windows" {
-			expected = strings.ReplaceAll(expected, "///uu", "///C:/uu")
+			expected = strings.ReplaceAll(expected, "///uu/", "///C:/uu/")
 		}
 		s := string(out)
 		sa, se, _ := strings.Cut(s, "timestamp") // cut out time, cannot compare

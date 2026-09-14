@@ -85,9 +85,9 @@ func TestCli(t *testing.T) {
 
 		expected := `<?xml version="1.0" encoding="UTF-8"?>
 <index schemaVersion="1.1.1" xs:noNamespaceSchemaLocation="PackIndex.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
-  <vendor>testing_vendor_index</vendor>
-  <url>file:///XX/test-continue-despite-errors.xml</url>
-  <>
+	<vendor>testing_vendor_index</vendor>
+	<url>file:///XX/</url>
+	<>
   <pindex>
     <pdsc vendor="TheVendor" url="test/" name="ThePack2" version="1.1.0"></pdsc>
     <pdsc vendor="TheVendor" url="test/" name="ThePack1" version="1.2.3"></pdsc>
@@ -95,6 +95,7 @@ func TestCli(t *testing.T) {
     <pdsc vendor="TheVendor" url="non-existing-path/" name="ThePack" version="1.0.1"></pdsc>
   </pindex>
 </index>`
+		expected = strings.ReplaceAll(expected, "\t", "  ")
 		wd, _ := os.Getwd()
 		wd = filepath.ToSlash(wd)
 		wd = strings.TrimPrefix(wd, "/")
