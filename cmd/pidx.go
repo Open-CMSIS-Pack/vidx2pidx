@@ -137,10 +137,13 @@ func (p *PidxXML) Update(vidx *VidxXML, vidxFileName string, outputFileName stri
 
 	filename := filepath.Base(vidxFileName)
 	p.Vendor = strings.TrimSuffix(filename, filepath.Ext(filename))
-	p.URL, _ = filepath.Abs(outputFileName)
+	p.URL, _ = filepath.Abs(filepath.Dir(outputFileName))
 	p.URL = filepath.ToSlash(p.URL)
 	p.URL = strings.TrimPrefix(p.URL, "/")
-	p.URL = "file:///" + p.URL
+	p.URL = "file:///" + strings.TrimSuffix(p.URL, "/")
+	if p.URL != "file:///" {
+		p.URL += "/"
+	}
 
 	t := time.Now()
 	p.Timestamp = t.Format("2006-01-02T15:04:05")
