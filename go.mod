@@ -1,6 +1,6 @@
 module github.com/open-cmsis-pack/vidx2pidx
 
-go 1.26
+go 1.27
 
 require (
 	bou.ke/monkey v1.0.2
